@@ -1,0 +1,1159 @@
+<!DOCTYPE html>
+<html lang="pt" class="scroll-smooth">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Nexus Contact Solutions — Excelência Operacional. Inteligência em Atendimento.</title>
+  <meta name="description" content="Contact Center & BPO de referência em Angola. SLA garantido, KPIs auditáveis e accountability contratual. Luanda, Angola." />
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Open+Sans:wght@300;400;500;600;700&family=Poppins:wght@400;500;600;700;800&display=swap" rel="stylesheet" />
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script>
+    tailwind.config = {
+      theme: {
+        extend: {
+          colors: {
+            navy: {
+              950: '#060d1a',
+              900: '#0d1b2e',
+              800: '#1a2f4e',
+              700: '#1e3a5f',
+              600: '#234d7a',
+            },
+            blue: {
+              electric: '#1e88e5',
+              bright:   '#2a9fd6',
+              glow:     '#5bbfef',
+            }
+          },
+          fontFamily: {
+            heading: ['Poppins', 'sans-serif'],
+            body:    ['Open Sans', 'sans-serif'],
+          },
+          backgroundImage: {
+            'hero-gradient': 'linear-gradient(135deg, #060d1a 0%, #0d1b2e 50%, #0f2240 100%)',
+            'card-gradient': 'linear-gradient(135deg, rgba(30,136,229,0.08) 0%, rgba(42,159,214,0.04) 100%)',
+          },
+          keyframes: {
+            fadeUp: {
+              '0%':   { opacity: '0', transform: 'translateY(32px)' },
+              '100%': { opacity: '1', transform: 'translateY(0)' },
+            },
+            pulse2: {
+              '0%, 100%': { opacity: '1' },
+              '50%':      { opacity: '0.6' },
+            },
+            countUp: {
+              from: { opacity: '0', transform: 'translateY(12px)' },
+              to:   { opacity: '1', transform: 'translateY(0)' },
+            },
+            glow: {
+              '0%, 100%': { boxShadow: '0 0 20px rgba(30,136,229,0.3)' },
+              '50%':      { boxShadow: '0 0 40px rgba(30,136,229,0.6)' },
+            },
+          },
+          animation: {
+            fadeUp:  'fadeUp 0.7s ease both',
+            pulse2:  'pulse2 2s ease-in-out infinite',
+            countUp: 'countUp 0.5s ease both',
+            glow:    'glow 3s ease-in-out infinite',
+          },
+        }
+      }
+    };
+  </script>
+  <style>
+    *, *::before, *::after { box-sizing: border-box; }
+    html { font-family: 'Open Sans', sans-serif; }
+    body { background: #0d1b2e; color: #f0f6ff; overflow-x: hidden; }
+
+    /* Glassmorphism */
+    .glass {
+      background: rgba(255,255,255,0.05);
+      backdrop-filter: blur(16px);
+      -webkit-backdrop-filter: blur(16px);
+      border: 1px solid rgba(255,255,255,0.10);
+    }
+    .glass-blue {
+      background: rgba(30,136,229,0.08);
+      backdrop-filter: blur(16px);
+      -webkit-backdrop-filter: blur(16px);
+      border: 1px solid rgba(42,159,214,0.20);
+    }
+
+    /* Navbar */
+    #navbar {
+      transition: background 0.3s, box-shadow 0.3s;
+    }
+    #navbar.scrolled {
+      background: rgba(6,13,26,0.95) !important;
+      backdrop-filter: blur(20px);
+      box-shadow: 0 2px 24px rgba(0,0,0,0.4);
+    }
+
+    /* Hero mesh */
+    .hero-mesh {
+      background:
+        radial-gradient(ellipse 80% 60% at 50% 0%, rgba(30,136,229,0.18) 0%, transparent 70%),
+        radial-gradient(ellipse 40% 40% at 80% 60%, rgba(42,159,214,0.12) 0%, transparent 60%),
+        linear-gradient(160deg, #060d1a 0%, #0d1b2e 50%, #0f2240 100%);
+    }
+
+    /* Grid dot pattern */
+    .dot-bg {
+      background-image: radial-gradient(rgba(255,255,255,0.04) 1px, transparent 1px);
+      background-size: 32px 32px;
+    }
+
+    /* Section divider */
+    .divider {
+      width: 48px; height: 3px;
+      background: linear-gradient(90deg, #1e88e5, #2a9fd6);
+      border-radius: 99px;
+    }
+
+    /* KPI ring */
+    .kpi-ring {
+      width: 110px; height: 110px;
+      border-radius: 50%;
+      border: 3px solid rgba(42,159,214,0.25);
+      display: flex; align-items: center; justify-content: center;
+      position: relative;
+    }
+    .kpi-ring::before {
+      content: '';
+      position: absolute; inset: -3px;
+      border-radius: 50%;
+      border: 3px solid transparent;
+      border-top-color: #1e88e5;
+      border-right-color: #2a9fd6;
+      animation: spin 8s linear infinite;
+    }
+    @keyframes spin { to { transform: rotate(360deg); } }
+
+    /* Sector card hover */
+    .sector-card {
+      transition: transform 0.25s ease, box-shadow 0.25s ease;
+    }
+    .sector-card:hover {
+      transform: translateY(-6px);
+      box-shadow: 0 20px 60px rgba(30,136,229,0.15);
+    }
+
+    /* Service card hover */
+    .service-card {
+      transition: transform 0.25s ease, border-color 0.25s ease, box-shadow 0.25s ease;
+      cursor: default;
+    }
+    .service-card:hover {
+      transform: translateY(-4px);
+      border-color: rgba(42,159,214,0.4) !important;
+      box-shadow: 0 12px 40px rgba(30,136,229,0.12);
+    }
+
+    /* Diferencial card */
+    .diff-card {
+      transition: transform 0.25s ease, box-shadow 0.25s ease;
+      cursor: default;
+    }
+    .diff-card:hover {
+      transform: translateY(-4px);
+      box-shadow: 0 16px 48px rgba(30,136,229,0.15);
+    }
+
+    /* Animate on scroll */
+    .reveal { opacity: 0; transform: translateY(28px); transition: opacity 0.65s ease, transform 0.65s ease; }
+    .reveal.visible { opacity: 1; transform: translateY(0); }
+    .reveal-delay-1 { transition-delay: 0.1s; }
+    .reveal-delay-2 { transition-delay: 0.2s; }
+    .reveal-delay-3 { transition-delay: 0.3s; }
+    .reveal-delay-4 { transition-delay: 0.4s; }
+
+    /* CTA button */
+    .btn-primary {
+      background: linear-gradient(135deg, #1e88e5, #2a9fd6);
+      transition: transform 0.2s, box-shadow 0.2s, filter 0.2s;
+    }
+    .btn-primary:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 8px 32px rgba(30,136,229,0.45);
+      filter: brightness(1.1);
+    }
+    .btn-primary:active { transform: translateY(0); }
+
+    .btn-outline {
+      border: 1.5px solid rgba(42,159,214,0.5);
+      transition: background 0.2s, border-color 0.2s, transform 0.2s;
+    }
+    .btn-outline:hover {
+      background: rgba(42,159,214,0.08);
+      border-color: #2a9fd6;
+      transform: translateY(-2px);
+    }
+
+    /* Nav links */
+    .nav-link {
+      position: relative;
+      transition: color 0.2s;
+    }
+    .nav-link::after {
+      content: '';
+      position: absolute; bottom: -2px; left: 0; right: 0;
+      height: 2px;
+      background: linear-gradient(90deg, #1e88e5, #2a9fd6);
+      border-radius: 99px;
+      transform: scaleX(0);
+      transition: transform 0.2s ease;
+    }
+    .nav-link:hover::after { transform: scaleX(1); }
+    .nav-link:hover { color: #5bbfef; }
+
+    /* Mobile menu */
+    #mobile-menu {
+      transition: max-height 0.3s ease, opacity 0.3s ease;
+      max-height: 0; opacity: 0; overflow: hidden;
+    }
+    #mobile-menu.open { max-height: 400px; opacity: 1; }
+
+    /* Scrollbar */
+    ::-webkit-scrollbar { width: 6px; }
+    ::-webkit-scrollbar-track { background: #0d1b2e; }
+    ::-webkit-scrollbar-thumb { background: #1e88e5; border-radius: 3px; }
+
+    /* Reduce motion */
+    @media (prefers-reduced-motion: reduce) {
+      .reveal, .sector-card, .service-card, .diff-card, .btn-primary, .btn-outline {
+        transition: none !important;
+        animation: none !important;
+      }
+      .kpi-ring::before { animation: none; }
+    }
+
+    /* Focus */
+    a:focus-visible, button:focus-visible {
+      outline: 2px solid #2a9fd6;
+      outline-offset: 3px;
+      border-radius: 4px;
+    }
+  </style>
+</head>
+<body>
+
+<!-- ═══════════════════════════════════ NAVBAR ═══════════════════════════════════ -->
+<header id="navbar" class="fixed top-0 left-0 right-0 z-50 px-4 sm:px-6 lg:px-8">
+  <div class="max-w-7xl mx-auto flex items-center justify-between h-16 lg:h-20">
+
+    <!-- Logo -->
+    <a href="#inicio" aria-label="Nexus Contact Solutions — Início" class="flex items-center gap-3 cursor-pointer">
+      <div class="w-9 h-9 relative flex-shrink-0" aria-hidden="true">
+        <!-- Nexus logo mark (SVG approximation) -->
+        <svg viewBox="0 0 36 36" fill="none" xmlns="http://www.w3.org/2000/svg" class="w-full h-full">
+          <circle cx="18" cy="18" r="17" stroke="#1e88e5" stroke-width="1.5" opacity="0.4"/>
+          <circle cx="18" cy="8"  r="3" fill="#2a9fd6"/>
+          <circle cx="29" cy="24" r="3" fill="#2a9fd6"/>
+          <circle cx="7"  cy="24" r="3" fill="#2a9fd6"/>
+          <circle cx="18" cy="18" r="4" fill="#1e88e5"/>
+          <line x1="18" y1="11" x2="18" y2="14" stroke="#5bbfef" stroke-width="1.5"/>
+          <line x1="26.6" y1="22" x2="21.5" y2="19.5" stroke="#5bbfef" stroke-width="1.5"/>
+          <line x1="9.4"  y1="22" x2="14.5" y2="19.5" stroke="#5bbfef" stroke-width="1.5"/>
+        </svg>
+      </div>
+      <div class="leading-tight">
+        <span class="font-heading font-700 text-white text-base tracking-wide block">NEXUS</span>
+        <span class="text-blue-bright text-xs font-500 tracking-widest block" style="font-family:'Open Sans',sans-serif;font-weight:500">CONTACT SOLUTIONS</span>
+      </div>
+    </a>
+
+    <!-- Desktop nav -->
+    <nav class="hidden lg:flex items-center gap-8" aria-label="Navegação principal">
+      <a href="#sobre"        class="nav-link text-slate-300 text-sm font-medium font-body">Quem Somos</a>
+      <a href="#sectores"     class="nav-link text-slate-300 text-sm font-medium font-body">Sectores</a>
+      <a href="#servicos"     class="nav-link text-slate-300 text-sm font-medium font-body">Serviços</a>
+      <a href="#performance"  class="nav-link text-slate-300 text-sm font-medium font-body">Performance</a>
+      <a href="#diferenciais" class="nav-link text-slate-300 text-sm font-medium font-body">Diferenciais</a>
+      <a href="#contacto"     class="btn-primary text-white text-sm font-semibold font-heading px-5 py-2.5 rounded-lg cursor-pointer">Falar Connosco</a>
+    </nav>
+
+    <!-- Mobile hamburger -->
+    <button id="menu-btn" class="lg:hidden text-white cursor-pointer p-2 rounded-md" aria-expanded="false" aria-controls="mobile-menu" aria-label="Abrir menu">
+      <svg id="icon-open"  class="w-6 h-6" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M4 6h16M4 12h16M4 18h16"/></svg>
+      <svg id="icon-close" class="w-6 h-6 hidden" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M6 18L18 6M6 6l12 12"/></svg>
+    </button>
+  </div>
+
+  <!-- Mobile menu -->
+  <div id="mobile-menu" class="lg:hidden glass rounded-xl mx-2 mb-2" role="navigation" aria-label="Menu mobile">
+    <div class="flex flex-col gap-1 p-4">
+      <a href="#sobre"        class="mobile-link text-slate-200 py-3 px-4 rounded-lg hover:bg-white/5 text-sm font-medium transition-colors cursor-pointer">Quem Somos</a>
+      <a href="#sectores"     class="mobile-link text-slate-200 py-3 px-4 rounded-lg hover:bg-white/5 text-sm font-medium transition-colors cursor-pointer">Sectores</a>
+      <a href="#servicos"     class="mobile-link text-slate-200 py-3 px-4 rounded-lg hover:bg-white/5 text-sm font-medium transition-colors cursor-pointer">Serviços</a>
+      <a href="#performance"  class="mobile-link text-slate-200 py-3 px-4 rounded-lg hover:bg-white/5 text-sm font-medium transition-colors cursor-pointer">Performance</a>
+      <a href="#diferenciais" class="mobile-link text-slate-200 py-3 px-4 rounded-lg hover:bg-white/5 text-sm font-medium transition-colors cursor-pointer">Diferenciais</a>
+      <a href="#contacto"     class="mobile-link btn-primary text-white text-center py-3 px-4 rounded-lg text-sm font-semibold mt-2 cursor-pointer">Falar Connosco</a>
+    </div>
+  </div>
+</header>
+
+
+<!-- ═══════════════════════════════════ HERO ════════════════════════════════════ -->
+<section id="inicio" class="hero-mesh dot-bg min-h-screen flex items-center pt-16 lg:pt-20 relative overflow-hidden">
+
+  <!-- Decorative blobs -->
+  <div class="absolute top-1/4 right-0 w-96 h-96 bg-blue-electric/10 rounded-full blur-3xl pointer-events-none" aria-hidden="true"></div>
+  <div class="absolute bottom-0 left-1/4 w-80 h-80 bg-blue-bright/8 rounded-full blur-3xl pointer-events-none" aria-hidden="true"></div>
+
+  <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-20 lg:py-28 w-full">
+    <div class="grid lg:grid-cols-2 gap-12 lg:gap-16 items-center">
+
+      <!-- Text -->
+      <div>
+        <div class="inline-flex items-center gap-2 glass rounded-full px-4 py-1.5 text-xs text-blue-glow font-medium mb-6 reveal">
+          <span class="w-1.5 h-1.5 rounded-full bg-blue-bright animate-pulse2 flex-shrink-0" aria-hidden="true"></span>
+          Luanda, Angola · Contact Center & BPO
+        </div>
+
+        <h1 class="font-heading font-800 text-white leading-tight reveal reveal-delay-1" style="font-size:clamp(2rem,5vw,3.5rem)">
+          Excelência<br/>
+          <span style="background:linear-gradient(90deg,#1e88e5,#5bbfef);-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text">Operacional.</span><br/>
+          Inteligência em<br/>Atendimento.
+        </h1>
+
+        <p class="text-slate-400 text-base lg:text-lg leading-relaxed mt-6 max-w-xl reveal reveal-delay-2">
+          O primeiro contact center angolano com SLA contratualizado, KPIs auditáveis e accountability total — construído pelos padrões internacionais que Angola merece.
+        </p>
+
+        <div class="flex flex-wrap gap-4 mt-8 reveal reveal-delay-3">
+          <a href="#contacto" class="btn-primary text-white font-semibold font-heading px-7 py-3.5 rounded-xl text-base cursor-pointer inline-flex items-center gap-2">
+            Solicitar Proposta
+            <svg class="w-4 h-4" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24" aria-hidden="true"><path stroke-linecap="round" stroke-linejoin="round" d="M13.5 4.5L21 12m0 0l-7.5 7.5M21 12H3"/></svg>
+          </a>
+          <a href="#sectores" class="btn-outline text-white font-medium font-heading px-7 py-3.5 rounded-xl text-base cursor-pointer">
+            Ver Soluções
+          </a>
+        </div>
+
+        <!-- Mini KPI strip -->
+        <div class="flex flex-wrap gap-6 mt-10 reveal reveal-delay-4">
+          <div class="text-center">
+            <div class="font-heading font-700 text-2xl text-blue-bright">80%</div>
+            <div class="text-slate-500 text-xs mt-0.5">SLA &lt;20s</div>
+          </div>
+          <div class="w-px bg-white/10 self-stretch" aria-hidden="true"></div>
+          <div class="text-center">
+            <div class="font-heading font-700 text-2xl text-blue-bright">4,5/5</div>
+            <div class="text-slate-500 text-xs mt-0.5">CSAT</div>
+          </div>
+          <div class="w-px bg-white/10 self-stretch" aria-hidden="true"></div>
+          <div class="text-center">
+            <div class="font-heading font-700 text-2xl text-blue-bright">&lt;3%</div>
+            <div class="text-slate-500 text-xs mt-0.5">Abandono</div>
+          </div>
+          <div class="w-px bg-white/10 self-stretch" aria-hidden="true"></div>
+          <div class="text-center">
+            <div class="font-heading font-700 text-2xl text-blue-bright">&gt;85%</div>
+            <div class="text-slate-500 text-xs mt-0.5">FCR</div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Hero visual card -->
+      <div class="hidden lg:flex justify-end reveal reveal-delay-2">
+        <div class="glass rounded-2xl p-8 max-w-sm w-full relative" style="animation: glow 4s ease-in-out infinite;">
+          <!-- Dashboard mock -->
+          <div class="text-xs text-slate-500 uppercase tracking-widest font-medium mb-5">Dashboard em Tempo Real</div>
+
+          <!-- Status bar -->
+          <div class="flex items-center justify-between mb-6">
+            <div class="flex items-center gap-2">
+              <div class="w-2 h-2 rounded-full bg-emerald-400 animate-pulse2" aria-hidden="true"></div>
+              <span class="text-slate-300 text-sm">Operação Activa</span>
+            </div>
+            <span class="text-slate-500 text-xs">24/7</span>
+          </div>
+
+          <!-- Metric rows -->
+          <div class="space-y-4">
+            <div class="flex items-center justify-between">
+              <span class="text-slate-400 text-sm">SLA Velocidade</span>
+              <div class="flex items-center gap-3">
+                <div class="w-28 h-1.5 bg-white/10 rounded-full overflow-hidden">
+                  <div class="h-full rounded-full bg-gradient-to-r from-blue-electric to-blue-bright" style="width:80%"></div>
+                </div>
+                <span class="text-white text-sm font-semibold w-8 text-right">80%</span>
+              </div>
+            </div>
+            <div class="flex items-center justify-between">
+              <span class="text-slate-400 text-sm">FCR 1º Contacto</span>
+              <div class="flex items-center gap-3">
+                <div class="w-28 h-1.5 bg-white/10 rounded-full overflow-hidden">
+                  <div class="h-full rounded-full bg-gradient-to-r from-blue-electric to-blue-bright" style="width:87%"></div>
+                </div>
+                <span class="text-white text-sm font-semibold w-8 text-right">87%</span>
+              </div>
+            </div>
+            <div class="flex items-center justify-between">
+              <span class="text-slate-400 text-sm">CSAT Médio</span>
+              <div class="flex items-center gap-3">
+                <div class="w-28 h-1.5 bg-white/10 rounded-full overflow-hidden">
+                  <div class="h-full rounded-full bg-gradient-to-r from-blue-electric to-blue-bright" style="width:90%"></div>
+                </div>
+                <span class="text-white text-sm font-semibold w-8 text-right">4,5</span>
+              </div>
+            </div>
+            <div class="flex items-center justify-between">
+              <span class="text-slate-400 text-sm">Taxa de Abandono</span>
+              <div class="flex items-center gap-3">
+                <div class="w-28 h-1.5 bg-white/10 rounded-full overflow-hidden">
+                  <div class="h-full rounded-full bg-emerald-400" style="width:97%"></div>
+                </div>
+                <span class="text-emerald-400 text-sm font-semibold w-8 text-right">&lt;3%</span>
+              </div>
+            </div>
+          </div>
+
+          <div class="mt-6 pt-5 border-t border-white/10">
+            <div class="text-xs text-slate-500 mb-2">Relatório semanal enviado automaticamente</div>
+            <div class="flex items-center gap-2">
+              <div class="w-6 h-6 rounded-full bg-blue-electric/20 flex items-center justify-center flex-shrink-0" aria-hidden="true">
+                <svg class="w-3 h-3 text-blue-bright" fill="currentColor" viewBox="0 0 20 20"><path d="M2.003 5.884L10 9.882l7.997-3.998A2 2 0 0016 4H4a2 2 0 00-1.997 1.884z"/><path d="M18 8.118l-8 4-8-4V14a2 2 0 002 2h12a2 2 0 002-2V8.118z"/></svg>
+              </div>
+              <span class="text-slate-400 text-xs">Próximo relatório: Segunda-feira</span>
+            </div>
+          </div>
+        </div>
+      </div>
+
+    </div>
+  </div>
+
+  <!-- Scroll hint -->
+  <div class="absolute bottom-8 left-1/2 -translate-x-1/2 flex flex-col items-center gap-2 text-slate-600 text-xs" aria-hidden="true">
+    <span>Scroll</span>
+    <div class="w-px h-8 bg-gradient-to-b from-slate-600 to-transparent"></div>
+  </div>
+</section>
+
+
+<!-- ════════════════════════════ QUEM SOMOS ════════════════════════════ -->
+<section id="sobre" class="py-20 lg:py-28 relative overflow-hidden">
+  <div class="absolute inset-0 dot-bg opacity-30" aria-hidden="true"></div>
+
+  <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 relative">
+    <div class="grid lg:grid-cols-2 gap-12 lg:gap-20 items-center">
+
+      <!-- Left: visual -->
+      <div class="order-2 lg:order-1 reveal">
+        <div class="relative">
+          <!-- Large quote card -->
+          <div class="glass rounded-2xl p-8 lg:p-10 border border-blue-electric/20">
+            <div class="text-blue-bright text-5xl font-heading font-700 leading-none mb-4" aria-hidden="true">"</div>
+            <blockquote class="text-white text-lg lg:text-xl font-medium leading-relaxed font-heading italic">
+              Construímos a Nexus para provar que a excelência operacional não é um privilégio importado. É um padrão que Angola pode liderar.
+            </blockquote>
+            <div class="mt-6 flex items-center gap-4">
+              <div class="w-11 h-11 rounded-full bg-gradient-to-br from-blue-electric to-blue-bright flex items-center justify-center text-white font-heading font-700 text-base flex-shrink-0" aria-label="Júlio César Martins">JM</div>
+              <div>
+                <div class="text-white font-semibold text-sm">Júlio César Martins</div>
+                <div class="text-slate-500 text-xs mt-0.5">Fundador e CEO · Nexus Contact Solutions</div>
+              </div>
+            </div>
+          </div>
+
+          <!-- Float badges -->
+          <div class="absolute -bottom-4 -right-4 glass-blue rounded-xl px-4 py-3 text-center hidden sm:block">
+            <div class="text-blue-bright font-heading font-700 text-xl">32%+</div>
+            <div class="text-slate-400 text-xs">Margem Operacional</div>
+          </div>
+        </div>
+
+        <!-- Pilares -->
+        <div class="grid grid-cols-3 gap-4 mt-10">
+          <div class="text-center reveal reveal-delay-1">
+            <div class="text-blue-bright font-heading font-700 text-lg">Global</div>
+            <div class="text-slate-500 text-xs mt-1">Experiência</div>
+          </div>
+          <div class="text-center reveal reveal-delay-2">
+            <div class="text-blue-bright font-heading font-700 text-lg">Local</div>
+            <div class="text-slate-500 text-xs mt-1">Sensibilidade</div>
+          </div>
+          <div class="text-center reveal reveal-delay-3">
+            <div class="text-blue-bright font-heading font-700 text-lg">100%</div>
+            <div class="text-slate-500 text-xs mt-1">Compromisso</div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Right: text -->
+      <div class="order-1 lg:order-2 reveal reveal-delay-1">
+        <div class="text-xs text-blue-bright uppercase tracking-widest font-medium mb-3">A Nossa Essência</div>
+        <div class="divider mb-6" aria-hidden="true"></div>
+        <h2 class="font-heading font-700 text-white text-3xl lg:text-4xl leading-tight mb-6">
+          Quem Somos
+        </h2>
+        <div class="space-y-4 text-slate-400 leading-relaxed text-base">
+          <p>
+            A Nexus Contact Solutions não nasceu de uma ideia em sala de reuniões. Nasceu da experiência directa, forjada nas operações de atendimento mais exigentes do mundo, e da convicção de que Angola merece esse mesmo padrão de excelência.
+          </p>
+          <p>
+            Viemos de lá fora, mas nunca deixámos de ser daqui. Chegamos ao mercado angolano não como estrangeiros, mas como profissionais que foram buscar o melhor da prática internacional para o trazer de volta para casa.
+          </p>
+          <p>
+            Para a Nexus, cada chamada, cada mensagem, cada contacto é uma oportunidade real de construir confiança e fazer crescer a marca dos nossos parceiros.
+          </p>
+        </div>
+
+        <!-- Credenciais -->
+        <div class="mt-8 flex flex-wrap gap-3">
+          <span class="glass-blue rounded-full px-4 py-1.5 text-xs text-blue-glow font-medium">Teleperformance · TAP Air Portugal</span>
+          <span class="glass-blue rounded-full px-4 py-1.5 text-xs text-blue-glow font-medium">Vodafone · Lisboa</span>
+          <span class="glass-blue rounded-full px-4 py-1.5 text-xs text-blue-glow font-medium">Morro Bento · Luanda</span>
+        </div>
+      </div>
+
+    </div>
+  </div>
+</section>
+
+
+<!-- ════════════════════════════ SECTORES ════════════════════════════ -->
+<section id="sectores" class="py-20 lg:py-28 relative" style="background:linear-gradient(180deg,#0d1b2e 0%,#0a1728 100%)">
+  <div class="absolute inset-0 dot-bg opacity-20" aria-hidden="true"></div>
+
+  <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 relative">
+    <div class="text-center mb-14 reveal">
+      <div class="text-xs text-blue-bright uppercase tracking-widest font-medium mb-3">Verticais de Especialização</div>
+      <div class="divider mx-auto mb-6" aria-hidden="true"></div>
+      <h2 class="font-heading font-700 text-white text-3xl lg:text-4xl leading-tight">
+        Soluções Adaptadas ao seu Sector
+      </h2>
+      <p class="text-slate-400 mt-4 max-w-xl mx-auto text-base">
+        Experiência concentrada em mercados onde a rapidez e a segurança são inegociáveis.
+      </p>
+    </div>
+
+    <div class="grid md:grid-cols-3 gap-6 lg:gap-8">
+
+      <!-- Sector 1: Apostas -->
+      <article class="sector-card glass rounded-2xl p-7 lg:p-8 reveal reveal-delay-1">
+        <div class="w-12 h-12 rounded-xl bg-blue-electric/15 flex items-center justify-center mb-5" aria-hidden="true">
+          <!-- Clock icon -->
+          <svg class="w-6 h-6 text-blue-bright" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/><path stroke-linecap="round" stroke-linejoin="round" d="M12 6v6l4 2"/></svg>
+        </div>
+        <div class="text-xs text-slate-500 uppercase tracking-widest font-medium mb-2">Sector 01</div>
+        <h3 class="font-heading font-700 text-white text-xl mb-3">Casas de Apostas Desportivas</h3>
+        <p class="text-slate-400 text-sm leading-relaxed mb-6">
+          O mundo das apostas não perdoa hesitações. A nossa equipa está treinada para gerir picos de tráfego extremo com a mesma qualidade dos momentos de menor afluência. Suporte crítico exactamente quando o cliente mais precisa.
+        </p>
+        <div class="flex flex-wrap gap-2 mb-6">
+          <span class="border border-white/10 rounded-full px-3 py-1 text-xs text-slate-400">Alto Tráfego</span>
+          <span class="border border-white/10 rounded-full px-3 py-1 text-xs text-slate-400">Resposta Imediata</span>
+          <span class="border border-white/10 rounded-full px-3 py-1 text-xs text-slate-400">Suporte 24/7</span>
+        </div>
+        <div class="glass-blue rounded-xl p-4 text-center">
+          <div class="text-2xl font-heading font-700 text-blue-bright">≤20s</div>
+          <div class="text-slate-400 text-xs mt-1">KPI Prioritário · Tempo de Resposta SLA</div>
+        </div>
+      </article>
+
+      <!-- Sector 2: Banca -->
+      <article class="sector-card glass rounded-2xl p-7 lg:p-8 reveal reveal-delay-2" style="border-color:rgba(30,136,229,0.25)">
+        <div class="w-12 h-12 rounded-xl bg-blue-electric/15 flex items-center justify-center mb-5" aria-hidden="true">
+          <!-- Shield icon -->
+          <svg class="w-6 h-6 text-blue-bright" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M9 12l2 2 4-4m5.618-4.016A11.955 11.955 0 0112 2.944a11.955 11.955 0 01-8.618 3.04A12.02 12.02 0 003 9c0 5.591 3.824 10.29 9 11.622 5.176-1.332 9-6.03 9-11.622 0-1.042-.133-2.052-.382-3.016z"/></svg>
+        </div>
+        <div class="text-xs text-slate-500 uppercase tracking-widest font-medium mb-2">Sector 02</div>
+        <h3 class="font-heading font-700 text-white text-xl mb-3">Banca e Serviços Financeiros</h3>
+        <p class="text-slate-400 text-sm leading-relaxed mb-6">
+          No sector financeiro, a confiança é o verdadeiro produto. Operamos com protocolos rigorosos, conformidade total com os regulamentos em vigor e equipas especializadas que compreendem a complexidade de cada interacção financeira.
+        </p>
+        <div class="flex flex-wrap gap-2 mb-6">
+          <span class="border border-white/10 rounded-full px-3 py-1 text-xs text-slate-400">Conformidade Regulatória</span>
+          <span class="border border-white/10 rounded-full px-3 py-1 text-xs text-slate-400">Protocolos de Segurança</span>
+        </div>
+        <div class="glass-blue rounded-xl p-4 text-center">
+          <div class="text-2xl font-heading font-700 text-blue-bright">4,5/5</div>
+          <div class="text-slate-400 text-xs mt-1">KPI Prioritário · CSAT Satisfação do Cliente</div>
+        </div>
+      </article>
+
+      <!-- Sector 3: Telecom -->
+      <article class="sector-card glass rounded-2xl p-7 lg:p-8 reveal reveal-delay-3">
+        <div class="w-12 h-12 rounded-xl bg-blue-electric/15 flex items-center justify-center mb-5" aria-hidden="true">
+          <!-- Signal icon -->
+          <svg class="w-6 h-6 text-blue-bright" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M8.111 16.404a5.5 5.5 0 017.778 0M12 20h.01m-7.08-7.071c3.904-3.905 10.236-3.905 14.141 0M1.394 9.393c5.857-5.857 15.355-5.857 21.213 0"/></svg>
+        </div>
+        <div class="text-xs text-slate-500 uppercase tracking-widest font-medium mb-2">Sector 03</div>
+        <h3 class="font-heading font-700 text-white text-xl mb-3">Telecomunicações e Logística</h3>
+        <p class="text-slate-400 text-sm leading-relaxed mb-6">
+          Mercados dinâmicos exigem parceiros igualmente dinâmicos. Gerimos toda a complexidade operacional com fluxos optimizados, equipas especializadas por canal e uma capacidade de adaptação rápida às mudanças do mercado.
+        </p>
+        <div class="flex flex-wrap gap-2 mb-6">
+          <span class="border border-white/10 rounded-full px-3 py-1 text-xs text-slate-400">Multicanal</span>
+          <span class="border border-white/10 rounded-full px-3 py-1 text-xs text-slate-400">Alto Volume</span>
+          <span class="border border-white/10 rounded-full px-3 py-1 text-xs text-slate-400">Escalabilidade</span>
+        </div>
+        <div class="glass-blue rounded-xl p-4 text-center">
+          <div class="text-2xl font-heading font-700 text-blue-bright">&gt;85%</div>
+          <div class="text-slate-400 text-xs mt-1">KPI Prioritário · FCR Resolução no 1º Contacto</div>
+        </div>
+      </article>
+
+    </div>
+  </div>
+</section>
+
+
+<!-- ════════════════════════════ SERVIÇOS ════════════════════════════ -->
+<section id="servicos" class="py-20 lg:py-28 relative overflow-hidden">
+  <div class="absolute top-0 left-0 w-full h-px bg-gradient-to-r from-transparent via-blue-electric/30 to-transparent" aria-hidden="true"></div>
+
+  <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+    <div class="text-center mb-14 reveal">
+      <div class="text-xs text-blue-bright uppercase tracking-widest font-medium mb-3">O Ecossistema de Serviços</div>
+      <div class="divider mx-auto mb-6" aria-hidden="true"></div>
+      <h2 class="font-heading font-700 text-white text-3xl lg:text-4xl">Os Nossos Serviços</h2>
+      <p class="text-slate-400 mt-4 max-w-xl mx-auto text-base">
+        Uma operação integrada que cobre cada ponto de contacto do ciclo de vida do seu cliente, da captação à fidelização.
+      </p>
+    </div>
+
+    <div class="grid sm:grid-cols-2 gap-6">
+
+      <!-- Serviço 1 -->
+      <article class="service-card glass rounded-2xl p-7 lg:p-8 reveal reveal-delay-1 border border-white/8">
+        <div class="flex items-start gap-5">
+          <div class="w-12 h-12 rounded-xl bg-blue-electric/15 flex items-center justify-center flex-shrink-0" aria-hidden="true">
+            <svg class="w-6 h-6 text-blue-bright" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M8 12h.01M12 12h.01M16 12h.01M21 12c0 4.418-4.03 8-9 8a9.863 9.863 0 01-4.255-.949L3 20l1.395-3.72C3.512 15.042 3 13.574 3 12c0-4.418 4.03-8 9-8s9 3.582 9 8z"/></svg>
+          </div>
+          <div>
+            <div class="text-xs text-slate-500 uppercase tracking-widest font-medium mb-1">Serviço 01</div>
+            <h3 class="font-heading font-700 text-white text-xl mb-1">Suporte Omnicanal</h3>
+            <div class="text-blue-bright text-xs mb-3 font-medium">(Inbound)</div>
+            <p class="text-slate-400 text-sm leading-relaxed mb-4">
+              Gerimos de forma integrada todos os pontos de contacto — voz, chat e WhatsApp — numa operação unificada, ágil e orientada para a resolução no primeiro contacto.
+            </p>
+            <div class="flex flex-wrap gap-2">
+              <span class="border border-white/10 rounded-full px-3 py-1 text-xs text-slate-400">Voz</span>
+              <span class="border border-white/10 rounded-full px-3 py-1 text-xs text-slate-400">Chat</span>
+              <span class="border border-white/10 rounded-full px-3 py-1 text-xs text-slate-400">WhatsApp</span>
+            </div>
+          </div>
+        </div>
+      </article>
+
+      <!-- Serviço 2 -->
+      <article class="service-card glass rounded-2xl p-7 lg:p-8 reveal reveal-delay-2 border border-white/8">
+        <div class="flex items-start gap-5">
+          <div class="w-12 h-12 rounded-xl bg-blue-electric/15 flex items-center justify-center flex-shrink-0" aria-hidden="true">
+            <svg class="w-6 h-6 text-blue-bright" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M9 12l2 2 4-4M7.835 4.697a3.42 3.42 0 001.946-.806 3.42 3.42 0 014.438 0 3.42 3.42 0 001.946.806 3.42 3.42 0 013.138 3.138 3.42 3.42 0 00.806 1.946 3.42 3.42 0 010 4.438 3.42 3.42 0 00-.806 1.946 3.42 3.42 0 01-3.138 3.138 3.42 3.42 0 00-1.946.806 3.42 3.42 0 01-4.438 0 3.42 3.42 0 00-1.946-.806 3.42 3.42 0 01-3.138-3.138 3.42 3.42 0 00-.806-1.946 3.42 3.42 0 010-4.438 3.42 3.42 0 00.806-1.946 3.42 3.42 0 013.138-3.138z"/></svg>
+          </div>
+          <div>
+            <div class="text-xs text-slate-500 uppercase tracking-widest font-medium mb-1">Serviço 02</div>
+            <h3 class="font-heading font-700 text-white text-xl mb-1">Gestão de Carteiras VIP</h3>
+            <div class="text-blue-bright text-xs mb-3 font-medium">(Retenção)</div>
+            <p class="text-slate-400 text-sm leading-relaxed mb-4">
+              Equipas dedicadas e exclusivas para a gestão de clientes de alto valor, com protocolos diferenciados, tempos de resposta prioritários e abordagem consultiva.
+            </p>
+            <div class="flex flex-wrap gap-2">
+              <span class="border border-white/10 rounded-full px-3 py-1 text-xs text-slate-400">Alto Valor</span>
+              <span class="border border-white/10 rounded-full px-3 py-1 text-xs text-slate-400">Prioritário</span>
+              <span class="border border-white/10 rounded-full px-3 py-1 text-xs text-slate-400">Consultivo</span>
+            </div>
+          </div>
+        </div>
+      </article>
+
+      <!-- Serviço 3 -->
+      <article class="service-card glass rounded-2xl p-7 lg:p-8 reveal reveal-delay-3 border border-white/8">
+        <div class="flex items-start gap-5">
+          <div class="w-12 h-12 rounded-xl bg-blue-electric/15 flex items-center justify-center flex-shrink-0" aria-hidden="true">
+            <svg class="w-6 h-6 text-blue-bright" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M13 7l5 5m0 0l-5 5m5-5H6"/></svg>
+          </div>
+          <div>
+            <div class="text-xs text-slate-500 uppercase tracking-widest font-medium mb-1">Serviço 03</div>
+            <h3 class="font-heading font-700 text-white text-xl mb-1">Prospecção e Recuperação</h3>
+            <div class="text-blue-bright text-xs mb-3 font-medium">(Outbound)</div>
+            <p class="text-slate-400 text-sm leading-relaxed mb-4">
+              Campanhas outbound estruturadas e orientadas por dados, da reactivação de clientes inactivos à prospecção de novos segmentos, com métricas de conversão monitorizadas em tempo real.
+            </p>
+            <div class="flex flex-wrap gap-2">
+              <span class="border border-white/10 rounded-full px-3 py-1 text-xs text-slate-400">Reactivação</span>
+              <span class="border border-white/10 rounded-full px-3 py-1 text-xs text-slate-400">Prospecção</span>
+              <span class="border border-white/10 rounded-full px-3 py-1 text-xs text-slate-400">Data-Driven</span>
+            </div>
+          </div>
+        </div>
+      </article>
+
+      <!-- Serviço 4 -->
+      <article class="service-card glass rounded-2xl p-7 lg:p-8 reveal reveal-delay-4 border border-white/8">
+        <div class="flex items-start gap-5">
+          <div class="w-12 h-12 rounded-xl bg-blue-electric/15 flex items-center justify-center flex-shrink-0" aria-hidden="true">
+            <svg class="w-6 h-6 text-blue-bright" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M4 7v10c0 2.21 3.582 4 8 4s8-1.79 8-4V7M4 7c0 2.21 3.582 4 8 4s8-1.79 8-4M4 7c0-2.21 3.582-4 8-4s8 1.79 8 4m0 5c0 2.21-3.582 4-8 4s-8-1.79-8-4"/></svg>
+          </div>
+          <div>
+            <div class="text-xs text-slate-500 uppercase tracking-widest font-medium mb-1">Serviço 04</div>
+            <h3 class="font-heading font-700 text-white text-xl mb-1">Integração de Dados e CRM</h3>
+            <p class="text-slate-400 text-sm leading-relaxed mb-4">
+              Implementamos e gerimos ecossistemas de CRM integrados, assegurando uma visão 360° do cliente e fluxos de trabalho automatizados que eliminam fricção operacional.
+            </p>
+            <div class="flex flex-wrap gap-2">
+              <span class="border border-white/10 rounded-full px-3 py-1 text-xs text-slate-400">360°</span>
+              <span class="border border-white/10 rounded-full px-3 py-1 text-xs text-slate-400">Automação</span>
+              <span class="border border-white/10 rounded-full px-3 py-1 text-xs text-slate-400">Cloud</span>
+            </div>
+          </div>
+        </div>
+      </article>
+
+    </div>
+  </div>
+</section>
+
+
+<!-- ════════════════════════════ PERFORMANCE / KPIs ════════════════════════════ -->
+<section id="performance" class="py-20 lg:py-28 relative" style="background:linear-gradient(180deg,#0d1b2e 0%,#091525 50%,#0d1b2e 100%)">
+  <div class="absolute inset-0 dot-bg opacity-20" aria-hidden="true"></div>
+  <div class="absolute inset-0" style="background:radial-gradient(ellipse 60% 50% at 50% 50%,rgba(30,136,229,0.07) 0%,transparent 70%)" aria-hidden="true"></div>
+
+  <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 relative">
+    <div class="text-center mb-14 reveal">
+      <div class="text-xs text-blue-bright uppercase tracking-widest font-medium mb-3">Performance Auditável</div>
+      <div class="divider mx-auto mb-6" aria-hidden="true"></div>
+      <h2 class="font-heading font-700 text-white text-3xl lg:text-4xl">Resultados Mensuráveis</h2>
+      <p class="text-slate-400 mt-4 max-w-xl mx-auto text-base">
+        A nossa operação é guiada pelos mesmos indicadores internacionais que regem as maiores operações de atendimento do mundo.
+      </p>
+    </div>
+
+    <!-- KPI cards -->
+    <div class="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-5 gap-4 lg:gap-6">
+
+      <div class="glass rounded-2xl p-6 text-center reveal reveal-delay-1">
+        <div class="kpi-ring mx-auto mb-4" aria-hidden="true">
+          <div>
+            <div class="font-heading font-700 text-2xl text-blue-bright kpi-value" data-target="80">0</div>
+            <div class="text-slate-500 text-xs">%</div>
+          </div>
+        </div>
+        <div class="font-heading font-600 text-white text-sm mb-1">SLA</div>
+        <div class="text-slate-500 text-xs">Velocidade de Atendimento</div>
+        <div class="text-slate-600 text-xs mt-1">80% chamadas &lt;20s</div>
+      </div>
+
+      <div class="glass rounded-2xl p-6 text-center reveal reveal-delay-2">
+        <div class="kpi-ring mx-auto mb-4" aria-hidden="true">
+          <div>
+            <div class="font-heading font-700 text-2xl text-blue-bright kpi-value" data-target="85">&gt;0</div>
+            <div class="text-slate-500 text-xs">%</div>
+          </div>
+        </div>
+        <div class="font-heading font-600 text-white text-sm mb-1">FCR</div>
+        <div class="text-slate-500 text-xs">Resolução no 1º Contacto</div>
+        <div class="text-slate-600 text-xs mt-1">&gt;85% dos contactos</div>
+      </div>
+
+      <div class="glass rounded-2xl p-6 text-center reveal reveal-delay-3">
+        <div class="kpi-ring mx-auto mb-4" aria-hidden="true">
+          <div>
+            <div class="font-heading font-700 text-2xl text-blue-bright">4,5</div>
+            <div class="text-slate-500 text-xs">/5</div>
+          </div>
+        </div>
+        <div class="font-heading font-600 text-white text-sm mb-1">CSAT</div>
+        <div class="text-slate-500 text-xs">Satisfação do Cliente</div>
+        <div class="text-slate-600 text-xs mt-1">Nota média de satisfação</div>
+      </div>
+
+      <div class="glass rounded-2xl p-6 text-center reveal reveal-delay-4">
+        <div class="kpi-ring mx-auto mb-4" aria-hidden="true">
+          <div>
+            <div class="font-heading font-700 text-xl text-blue-bright">ÓPT.</div>
+            <div class="text-slate-500 text-xs mt-1">AHT</div>
+          </div>
+        </div>
+        <div class="font-heading font-600 text-white text-sm mb-1">AHT</div>
+        <div class="text-slate-500 text-xs">Tempo Médio de Atendimento</div>
+        <div class="text-slate-600 text-xs mt-1">Óptimo por processo</div>
+      </div>
+
+      <div class="glass rounded-2xl p-6 text-center col-span-2 md:col-span-1 reveal reveal-delay-4">
+        <div class="kpi-ring mx-auto mb-4" aria-hidden="true">
+          <div>
+            <div class="font-heading font-700 text-xl text-emerald-400">&lt;3</div>
+            <div class="text-slate-500 text-xs">%</div>
+          </div>
+        </div>
+        <div class="font-heading font-600 text-white text-sm mb-1">Abandono</div>
+        <div class="text-slate-500 text-xs">Taxa de Abandono</div>
+        <div class="text-slate-600 text-xs mt-1">&lt;3% sem resposta</div>
+      </div>
+
+    </div>
+
+    <!-- Trust callout -->
+    <div class="mt-10 glass-blue rounded-2xl p-6 lg:p-8 reveal">
+      <div class="flex flex-col md:flex-row items-center gap-6">
+        <div class="w-12 h-12 rounded-xl bg-blue-electric/20 flex items-center justify-center flex-shrink-0" aria-hidden="true">
+          <svg class="w-6 h-6 text-blue-bright" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M9 12l2 2 4-4m5.618-4.016A11.955 11.955 0 0112 2.944a11.955 11.955 0 01-8.618 3.04A12.02 12.02 0 003 9c0 5.591 3.824 10.29 9 11.622 5.176-1.332 9-6.03 9-11.622 0-1.042-.133-2.052-.382-3.016z"/></svg>
+        </div>
+        <div>
+          <h3 class="font-heading font-700 text-white text-xl mb-1">Um Novo Padrão para Angola</h3>
+          <p class="text-slate-400 text-sm leading-relaxed">
+            Num mercado onde a medição rigorosa ainda é excepção, a Nexus posiciona-se como operador de referência: métricas auditáveis, relatórios transparentes e compromissos contratuais baseados no cumprimento estrito destes indicadores.
+          </p>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+
+<!-- ════════════════════════════ DIFERENCIAIS ════════════════════════════ -->
+<section id="diferenciais" class="py-20 lg:py-28 relative overflow-hidden">
+  <div class="absolute top-0 left-0 w-full h-px bg-gradient-to-r from-transparent via-blue-electric/30 to-transparent" aria-hidden="true"></div>
+
+  <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+    <div class="text-center mb-14 reveal">
+      <div class="text-xs text-blue-bright uppercase tracking-widest font-medium mb-3">Porquê a Nexus</div>
+      <div class="divider mx-auto mb-6" aria-hidden="true"></div>
+      <h2 class="font-heading font-700 text-white text-3xl lg:text-4xl">Diferenciais Competitivos</h2>
+      <p class="text-slate-400 mt-4 max-w-xl mx-auto text-base">
+        O que nos distingue não são apenas as nossas promessas — são as infra-estruturas, os processos e as pessoas que as tornam realidade, todos os dias.
+      </p>
+    </div>
+
+    <div class="grid sm:grid-cols-2 lg:grid-cols-4 gap-6">
+
+      <!-- D1 -->
+      <article class="diff-card glass rounded-2xl p-6 lg:p-7 reveal reveal-delay-1">
+        <div class="text-5xl font-heading font-800 text-white/8 leading-none mb-4" aria-hidden="true">01</div>
+        <div class="w-11 h-11 rounded-xl bg-blue-electric/15 flex items-center justify-center mb-4" aria-hidden="true">
+          <svg class="w-5 h-5 text-blue-bright" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M3 15a4 4 0 004 4h9a5 5 0 10-.1-9.999 5.002 5.002 0 10-9.78 2.096A4.001 4.001 0 003 15z"/></svg>
+        </div>
+        <div class="text-xs text-slate-500 uppercase tracking-widest font-medium mb-2">Diferencial</div>
+        <h3 class="font-heading font-700 text-white text-lg mb-3">Tecnologia Cloud de Vanguarda</h3>
+        <p class="text-slate-400 text-sm leading-relaxed mb-4">
+          Infra-estrutura de voz em nuvem e sistemas de CRM de última geração. 99,9% de disponibilidade operacional, integrações em tempo real e escalabilidade imediata.
+        </p>
+        <div class="text-xs text-blue-bright/70 italic">"A tecnologia certa não é um luxo, é a base de tudo."</div>
+      </article>
+
+      <!-- D2 -->
+      <article class="diff-card glass rounded-2xl p-6 lg:p-7 reveal reveal-delay-2">
+        <div class="text-5xl font-heading font-800 text-white/8 leading-none mb-4" aria-hidden="true">02</div>
+        <div class="w-11 h-11 rounded-xl bg-blue-electric/15 flex items-center justify-center mb-4" aria-hidden="true">
+          <svg class="w-5 h-5 text-blue-bright" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z"/></svg>
+        </div>
+        <div class="text-xs text-slate-500 uppercase tracking-widest font-medium mb-2">Diferencial</div>
+        <h3 class="font-heading font-700 text-white text-lg mb-3">Relatórios Semanais</h3>
+        <p class="text-slate-400 text-sm leading-relaxed mb-4">
+          Dashboards personalizados com os KPI da sua operação, entregues semanalmente. Dados reais, métricas claras e visão completa do desempenho — sem filtros nem surpresas.
+        </p>
+        <div class="text-xs text-blue-bright/70 italic">"O que não se mede, não se melhora, e nós medimos tudo."</div>
+      </article>
+
+      <!-- D3 -->
+      <article class="diff-card glass rounded-2xl p-6 lg:p-7 reveal reveal-delay-3">
+        <div class="text-5xl font-heading font-800 text-white/8 leading-none mb-4" aria-hidden="true">03</div>
+        <div class="w-11 h-11 rounded-xl bg-blue-electric/15 flex items-center justify-center mb-4" aria-hidden="true">
+          <svg class="w-5 h-5 text-blue-bright" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M12 6.253v13m0-13C10.832 5.477 9.246 5 7.5 5S4.168 5.477 3 6.253v13C4.168 18.477 5.754 18 7.5 18s3.332.477 4.5 1.253m0-13C13.168 5.477 14.754 5 16.5 5c1.747 0 3.332.477 4.5 1.253v13C19.832 18.477 18.247 18 16.5 18c-1.746 0-3.332.477-4.5 1.253"/></svg>
+        </div>
+        <div class="text-xs text-slate-500 uppercase tracking-widest font-medium mb-2">Diferencial</div>
+        <h3 class="font-heading font-700 text-white text-lg mb-3">Formação Especializada</h3>
+        <p class="text-slate-400 text-sm leading-relaxed mb-4">
+          Os nossos agentes são profissionais treinados em inteligência emocional e resolução estratégica de conflitos, preparados para transformar cada interacção difícil numa oportunidade de fidelização.
+        </p>
+        <div class="text-xs text-blue-bright/70 italic">"O melhor atendimento começa antes de o telefone tocar."</div>
+      </article>
+
+      <!-- D4 -->
+      <article class="diff-card glass rounded-2xl p-6 lg:p-7 reveal reveal-delay-4">
+        <div class="text-5xl font-heading font-800 text-white/8 leading-none mb-4" aria-hidden="true">04</div>
+        <div class="w-11 h-11 rounded-xl bg-blue-electric/15 flex items-center justify-center mb-4" aria-hidden="true">
+          <svg class="w-5 h-5 text-blue-bright" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16m14 0h2m-2 0h-5m-9 0H3m2 0h5M9 7h1m-1 4h1m4-4h1m-1 4h1m-5 10v-5a1 1 0 011-1h2a1 1 0 011 1v5m-4 0h4"/></svg>
+        </div>
+        <div class="text-xs text-slate-500 uppercase tracking-widest font-medium mb-2">Diferencial</div>
+        <h3 class="font-heading font-700 text-white text-lg mb-3">Infra-estrutura Resiliente</h3>
+        <p class="text-slate-400 text-sm leading-relaxed mb-4">
+          A nossa sede no Morro Bento foi concebida para nunca parar. Redundância de energia, fibra dedicada com backup 4G e sistemas de segurança 24/7 para operação contínua.
+        </p>
+        <div class="text-xs text-blue-bright/70 italic">"A resiliência não é um plano B, é a nossa arquitectura base."</div>
+      </article>
+
+    </div>
+  </div>
+</section>
+
+
+<!-- ════════════════════════════ COMPROMISSO ════════════════════════════ -->
+<section class="py-20 lg:py-28 relative overflow-hidden" style="background:linear-gradient(180deg,#0d1b2e 0%,#091525 100%)">
+  <div class="absolute inset-0 dot-bg opacity-20" aria-hidden="true"></div>
+  <div class="absolute inset-0" style="background:radial-gradient(ellipse 70% 60% at 50% 50%,rgba(30,136,229,0.06) 0%,transparent 70%)" aria-hidden="true"></div>
+
+  <div class="max-w-5xl mx-auto px-4 sm:px-6 lg:px-8 relative">
+    <div class="text-center mb-12 reveal">
+      <div class="text-xs text-blue-bright uppercase tracking-widest font-medium mb-3">Compromisso</div>
+      <div class="divider mx-auto mb-6" aria-hidden="true"></div>
+      <h2 class="font-heading font-700 text-white text-3xl lg:text-4xl">O Sucesso do Cliente como Meta</h2>
+    </div>
+
+    <!-- Quote -->
+    <div class="glass-blue rounded-2xl p-8 lg:p-10 mb-8 reveal">
+      <div class="text-blue-bright text-5xl font-heading font-700 leading-none mb-4" aria-hidden="true">"</div>
+      <blockquote class="text-white text-lg lg:text-xl font-medium leading-relaxed font-heading italic text-center">
+        Não pedimos confiança cega. Provamos o nosso valor com resultados mensuráveis, relatórios transparentes e uma equipa que se mantém responsável a cada semana, a cada mês, a cada interacção.
+      </blockquote>
+      <div class="mt-6 flex items-center justify-center gap-3">
+        <div class="w-10 h-10 rounded-full bg-gradient-to-br from-blue-electric to-blue-bright flex items-center justify-center text-white font-heading font-700 text-sm" aria-label="Júlio César Martins">JM</div>
+        <div class="text-center">
+          <div class="text-white font-semibold text-sm">Júlio César Martins</div>
+          <div class="text-slate-500 text-xs">Fundador e CEO</div>
+        </div>
+      </div>
+    </div>
+
+    <!-- 3 pillars -->
+    <div class="grid md:grid-cols-3 gap-5">
+      <div class="glass rounded-xl p-6 text-center reveal reveal-delay-1">
+        <div class="w-10 h-10 rounded-xl bg-emerald-500/15 flex items-center justify-center mx-auto mb-4" aria-hidden="true">
+          <svg class="w-5 h-5 text-emerald-400" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M12 8v13m0-13V6a2 2 0 112 2h-2zm0 0V5.5A2.5 2.5 0 109.5 8H12zm-7 4h14M5 12a2 2 0 110-4h14a2 2 0 110 4M5 12v7a2 2 0 002 2h10a2 2 0 002-2v-7"/></svg>
+        </div>
+        <h3 class="font-heading font-700 text-white text-base mb-2">Bónus por Performance</h3>
+        <p class="text-slate-400 text-sm leading-relaxed">Quando superamos os objectivos, celebramos em conjunto — com bónus ligados ao cumprimento dos SLA acordados.</p>
+      </div>
+      <div class="glass rounded-xl p-6 text-center reveal reveal-delay-2">
+        <div class="w-10 h-10 rounded-xl bg-red-500/15 flex items-center justify-center mx-auto mb-4" aria-hidden="true">
+          <svg class="w-5 h-5 text-red-400" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"/></svg>
+        </div>
+        <h3 class="font-heading font-700 text-white text-base mb-2">Penalizações Contratuais</h3>
+        <p class="text-slate-400 text-sm leading-relaxed">Quando ficamos aquém, assumimos as consequências — sem desculpas e sem excepções.</p>
+      </div>
+      <div class="glass rounded-xl p-6 text-center reveal reveal-delay-3">
+        <div class="w-10 h-10 rounded-xl bg-blue-electric/15 flex items-center justify-center mx-auto mb-4" aria-hidden="true">
+          <svg class="w-5 h-5 text-blue-bright" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M9 17v-2m3 2v-4m3 4v-6m2 10H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"/></svg>
+        </div>
+        <h3 class="font-heading font-700 text-white text-base mb-2">Relatórios Transparentes</h3>
+        <p class="text-slate-400 text-sm leading-relaxed">Acesso semanal a dados reais e métricas claras. Sem filtros, sem surpresas.</p>
+      </div>
+    </div>
+
+    <!-- 3 outcomes -->
+    <div class="grid md:grid-cols-3 gap-4 mt-6">
+      <div class="border border-white/10 rounded-xl p-5 text-center reveal reveal-delay-1">
+        <div class="font-heading font-700 text-blue-bright text-lg mb-1">O seu Crescimento</div>
+        <div class="text-slate-500 text-xs">A nossa missão em cada parceria</div>
+      </div>
+      <div class="border border-white/10 rounded-xl p-5 text-center reveal reveal-delay-2">
+        <div class="font-heading font-700 text-blue-bright text-lg mb-1">A sua Tranquilidade</div>
+        <div class="text-slate-500 text-xs">O nosso indicador de sucesso</div>
+      </div>
+      <div class="glass-blue rounded-xl p-5 text-center reveal reveal-delay-3">
+        <div class="font-heading font-700 text-white text-lg mb-1">O Sucesso do seu Cliente</div>
+        <div class="text-slate-500 text-xs">O nosso maior orgulho</div>
+      </div>
+    </div>
+  </div>
+</section>
+
+
+<!-- ════════════════════════════ CONTACTO ════════════════════════════ -->
+<section id="contacto" class="py-20 lg:py-28 relative overflow-hidden">
+  <div class="absolute inset-0" style="background:radial-gradient(ellipse 80% 60% at 50% 0%,rgba(30,136,229,0.12) 0%,transparent 70%)" aria-hidden="true"></div>
+  <div class="absolute inset-0 dot-bg opacity-20" aria-hidden="true"></div>
+
+  <div class="max-w-5xl mx-auto px-4 sm:px-6 lg:px-8 relative">
+
+    <!-- CTA banner -->
+    <div class="glass-blue rounded-3xl p-10 lg:p-14 text-center mb-12 reveal" style="border-color:rgba(30,136,229,0.3)">
+      <div class="text-xs text-blue-bright uppercase tracking-widest font-medium mb-4">Contacto</div>
+      <h2 class="font-heading font-800 text-white leading-tight mb-4" style="font-size:clamp(2rem,4vw,3rem)">
+        Vamos Conversar.
+      </h2>
+      <p class="text-slate-400 text-base lg:text-lg max-w-xl mx-auto mb-2 leading-relaxed">
+        O primeiro passo para transformar a experiência dos seus clientes começa com uma conversa.
+      </p>
+      <p class="text-blue-bright font-medium text-sm mb-8">Não adie o que pode mudar o rumo do seu negócio.</p>
+
+      <a href="https://wa.me/244972429868" target="_blank" rel="noopener noreferrer" class="btn-primary inline-flex items-center gap-3 text-white font-semibold font-heading px-8 py-4 rounded-xl text-base cursor-pointer">
+        <!-- WhatsApp icon -->
+        <svg class="w-5 h-5" fill="currentColor" viewBox="0 0 24 24" aria-hidden="true"><path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347m-5.421 7.403h-.004a9.87 9.87 0 01-5.031-1.378l-.361-.214-3.741.982.998-3.648-.235-.374a9.86 9.86 0 01-1.51-5.26c.001-5.45 4.436-9.884 9.888-9.884 2.64 0 5.122 1.03 6.988 2.898a9.825 9.825 0 012.893 6.994c-.003 5.45-4.437 9.884-9.885 9.884m8.413-18.297A11.815 11.815 0 0012.05 0C5.495 0 .16 5.335.157 11.892c0 2.096.547 4.142 1.588 5.945L.057 24l6.305-1.654a11.882 11.882 0 005.683 1.448h.005c6.554 0 11.89-5.335 11.893-11.893a11.821 11.821 0 00-3.48-8.413z"/></svg>
+        Iniciar Conversa no WhatsApp
+      </a>
+    </div>
+
+    <!-- Contact cards -->
+    <div class="grid sm:grid-cols-2 gap-5 reveal">
+
+      <div class="glass rounded-2xl p-6">
+        <div class="space-y-4">
+          <a href="https://wa.me/244972429868" target="_blank" rel="noopener noreferrer" class="flex items-center gap-4 group cursor-pointer">
+            <div class="w-11 h-11 rounded-xl bg-blue-electric/15 flex items-center justify-center flex-shrink-0 group-hover:bg-blue-electric/25 transition-colors" aria-hidden="true">
+              <!-- WhatsApp -->
+              <svg class="w-5 h-5 text-blue-bright" fill="currentColor" viewBox="0 0 24 24"><path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347m-5.421 7.403h-.004a9.87 9.87 0 01-5.031-1.378l-.361-.214-3.741.982.998-3.648-.235-.374a9.86 9.86 0 01-1.51-5.26c.001-5.45 4.436-9.884 9.888-9.884 2.64 0 5.122 1.03 6.988 2.898a9.825 9.825 0 012.893 6.994c-.003 5.45-4.437 9.884-9.885 9.884m8.413-18.297A11.815 11.815 0 0012.05 0C5.495 0 .16 5.335.157 11.892c0 2.096.547 4.142 1.588 5.945L.057 24l6.305-1.654a11.882 11.882 0 005.683 1.448h.005c6.554 0 11.89-5.335 11.893-11.893a11.821 11.821 0 00-3.48-8.413z"/></svg>
+            </div>
+            <div>
+              <div class="text-slate-500 text-xs uppercase tracking-widest">WhatsApp</div>
+              <div class="text-white font-semibold text-sm group-hover:text-blue-bright transition-colors">+244 972 429 868</div>
+            </div>
+          </a>
+
+          <a href="mailto:ncs@nexuscontactsolutions.co.ao" class="flex items-center gap-4 group cursor-pointer">
+            <div class="w-11 h-11 rounded-xl bg-blue-electric/15 flex items-center justify-center flex-shrink-0 group-hover:bg-blue-electric/25 transition-colors" aria-hidden="true">
+              <svg class="w-5 h-5 text-blue-bright" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M3 8l7.89 5.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z"/></svg>
+            </div>
+            <div>
+              <div class="text-slate-500 text-xs uppercase tracking-widest">E-mail</div>
+              <div class="text-white font-semibold text-sm group-hover:text-blue-bright transition-colors">ncs@nexuscontactsolutions.co.ao</div>
+            </div>
+          </a>
+        </div>
+      </div>
+
+      <div class="glass rounded-2xl p-6">
+        <div class="space-y-4">
+          <div class="flex items-center gap-4">
+            <div class="w-11 h-11 rounded-xl bg-blue-electric/15 flex items-center justify-center flex-shrink-0" aria-hidden="true">
+              <svg class="w-5 h-5 text-blue-bright" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z"/><path stroke-linecap="round" stroke-linejoin="round" d="M15 11a3 3 0 11-6 0 3 3 0 016 0z"/></svg>
+            </div>
+            <div>
+              <div class="text-slate-500 text-xs uppercase tracking-widest">Localização</div>
+              <div class="text-white font-semibold text-sm">Morro Bento, Luanda, Angola</div>
+            </div>
+          </div>
+
+          <a href="https://www.linkedin.com/company/nexus-contact-solutions" target="_blank" rel="noopener noreferrer" class="flex items-center gap-4 group cursor-pointer">
+            <div class="w-11 h-11 rounded-xl bg-blue-electric/15 flex items-center justify-center flex-shrink-0 group-hover:bg-blue-electric/25 transition-colors" aria-hidden="true">
+              <svg class="w-5 h-5 text-blue-bright" fill="currentColor" viewBox="0 0 24 24"><path d="M20.447 20.452h-3.554v-5.569c0-1.328-.027-3.037-1.852-3.037-1.853 0-2.136 1.445-2.136 2.939v5.667H9.351V9h3.414v1.561h.046c.477-.9 1.637-1.85 3.37-1.85 3.601 0 4.267 2.37 4.267 5.455v6.286zM5.337 7.433a2.062 2.062 0 01-2.063-2.065 2.064 2.064 0 112.063 2.065zm1.782 13.019H3.555V9h3.564v11.452zM22.225 0H1.771C.792 0 0 .774 0 1.729v20.542C0 23.227.792 24 1.771 24h20.451C23.2 24 24 23.227 24 22.271V1.729C24 .774 23.2 0 22.222 0h.003z"/></svg>
+            </div>
+            <div>
+              <div class="text-slate-500 text-xs uppercase tracking-widest">LinkedIn</div>
+              <div class="text-white font-semibold text-sm group-hover:text-blue-bright transition-colors">Nexus Contact Solutions</div>
+            </div>
+          </a>
+        </div>
+      </div>
+
+    </div>
+  </div>
+</section>
+
+
+<!-- ════════════════════════════ FOOTER ════════════════════════════ -->
+<footer class="border-t border-white/8 py-10" style="background:#060d1a">
+  <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+    <div class="flex flex-col md:flex-row items-center justify-between gap-6">
+      <div class="flex items-center gap-3">
+        <div class="w-7 h-7 relative flex-shrink-0" aria-hidden="true">
+          <svg viewBox="0 0 36 36" fill="none" class="w-full h-full">
+            <circle cx="18" cy="18" r="17" stroke="#1e88e5" stroke-width="1.5" opacity="0.4"/>
+            <circle cx="18" cy="8"  r="3" fill="#2a9fd6"/>
+            <circle cx="29" cy="24" r="3" fill="#2a9fd6"/>
+            <circle cx="7"  cy="24" r="3" fill="#2a9fd6"/>
+            <circle cx="18" cy="18" r="4" fill="#1e88e5"/>
+            <line x1="18" y1="11" x2="18" y2="14" stroke="#5bbfef" stroke-width="1.5"/>
+            <line x1="26.6" y1="22" x2="21.5" y2="19.5" stroke="#5bbfef" stroke-width="1.5"/>
+            <line x1="9.4"  y1="22" x2="14.5" y2="19.5" stroke="#5bbfef" stroke-width="1.5"/>
+          </svg>
+        </div>
+        <div>
+          <span class="font-heading font-700 text-white text-sm">NEXUS CONTACT SOLUTIONS</span>
+          <div class="text-slate-600 text-xs mt-0.5">Excelência Operacional · Luanda, Angola · 2026</div>
+        </div>
+      </div>
+      <div class="text-slate-600 text-xs text-center">
+        <p>"Nexus Contact Solutions: onde cada contacto se transforma em resultado."</p>
+        <p class="mt-1">© 2026 Nexus Contact Solutions, Lda. · NIF emitido pela AGT</p>
+      </div>
+    </div>
+  </div>
+</footer>
+
+
+<!-- ════════════════════════════ SCRIPTS ════════════════════════════ -->
+<script>
+  // Navbar scroll effect
+  const navbar = document.getElementById('navbar');
+  window.addEventListener('scroll', () => {
+    navbar.classList.toggle('scrolled', window.scrollY > 40);
+  }, { passive: true });
+
+  // Mobile menu toggle
+  const menuBtn  = document.getElementById('menu-btn');
+  const mobileMenu = document.getElementById('mobile-menu');
+  const iconOpen   = document.getElementById('icon-open');
+  const iconClose  = document.getElementById('icon-close');
+
+  menuBtn.addEventListener('click', () => {
+    const isOpen = mobileMenu.classList.toggle('open');
+    menuBtn.setAttribute('aria-expanded', isOpen);
+    iconOpen.classList.toggle('hidden', isOpen);
+    iconClose.classList.toggle('hidden', !isOpen);
+  });
+
+  // Close mobile menu on link click
+  document.querySelectorAll('.mobile-link').forEach(link => {
+    link.addEventListener('click', () => {
+      mobileMenu.classList.remove('open');
+      menuBtn.setAttribute('aria-expanded', 'false');
+      iconOpen.classList.remove('hidden');
+      iconClose.classList.add('hidden');
+    });
+  });
+
+  // Reveal on scroll
+  const reveals = document.querySelectorAll('.reveal');
+  const observer = new IntersectionObserver((entries) => {
+    entries.forEach(entry => {
+      if (entry.isIntersecting) {
+        entry.target.classList.add('visible');
+        observer.unobserve(entry.target);
+      }
+    });
+  }, { threshold: 0.12, rootMargin: '0px 0px -40px 0px' });
+
+  reveals.forEach(el => observer.observe(el));
+
+  // KPI counter animation
+  function animateCounter(el, target, suffix = '') {
+    const duration = 1400;
+    const start = performance.now();
+    const update = (time) => {
+      const elapsed = Math.min((time - start) / duration, 1);
+      const ease = 1 - Math.pow(1 - elapsed, 3);
+      const current = Math.round(ease * target);
+      el.textContent = current + suffix;
+      if (elapsed < 1) requestAnimationFrame(update);
+    };
+    requestAnimationFrame(update);
+  }
+
+  const kpiObserver = new IntersectionObserver((entries) => {
+    entries.forEach(entry => {
+      if (entry.isIntersecting) {
+        const el = entry.target;
+        const target = parseInt(el.dataset.target);
+        if (!isNaN(target)) animateCounter(el, target, '%');
+        kpiObserver.unobserve(el);
+      }
+    });
+  }, { threshold: 0.5 });
+
+  document.querySelectorAll('.kpi-value').forEach(el => kpiObserver.observe(el));
+
+  // Smooth scroll for anchor links
+  document.querySelectorAll('a[href^="#"]').forEach(link => {
+    link.addEventListener('click', e => {
+      e.preventDefault();
+      const target = document.querySelector(link.getAttribute('href'));
+      if (target) {
+        const offset = 80;
+        const top = target.getBoundingClientRect().top + window.scrollY - offset;
+        window.scrollTo({ top, behavior: 'smooth' });
+      }
+    });
+  });
+</script>
+</body>
+</html>
