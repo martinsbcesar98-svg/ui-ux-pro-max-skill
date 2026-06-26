@@ -855,7 +855,8 @@ function render(){
 // ══════════════════════════════════════
 function renderSidebar(){
   const list=Object.values(orders);
-  const allOrders=[...list,...history];
+  const activeNonDelivered=list.filter(o=>o.status!=='delivered');
+  const allOrders=[...activeNonDelivered,...history];
   const todayStart=new Date(); todayStart.setHours(0,0,0,0);
   const todayOrders=allOrders.filter(o=>o.timestamp>=todayStart.getTime());
   const todayDelivered=todayOrders.filter(o=>o.status==='delivered'||o.deliveredAt);
