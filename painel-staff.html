@@ -328,10 +328,9 @@ header{
 <div id="cfg-overlay">
   <div class="cfg-box" style="text-align:center">
     <h2>Restaurante K</h2>
-    <p style="margin-bottom:32px">A ligar ao Firebase…</p>
-    <div id="fb-dot" style="width:16px;height:16px;border-radius:50%;background:#c9a24b;margin:0 auto 12px;animation:pulse 1s ease infinite"></div>
+    <p style="margin-bottom:32px">A ligar ao servidor de pedidos…</p>
+    <div style="width:16px;height:16px;border-radius:50%;background:#c9a24b;margin:0 auto 12px;animation:pulse 1s ease infinite"></div>
     <style>@keyframes pulse{0%,100%{opacity:1}50%{opacity:.3}}</style>
-    <div style="margin-top:24px"><a onclick="startDemo()" style="color:#8e8070;font-size:12px;cursor:pointer;text-decoration:underline">Usar modo demo</a></div>
   </div>
 </div>
 
@@ -374,8 +373,8 @@ header{
 let orders = {}; // { id: orderObj }
 let filter = 'all';
 let soundOn = true;
-let demoMode = false;
-let demoInterval = null;
+
+
 let unsubscribe = null;
 
 // ─────────────────────────────────────────────
@@ -419,110 +418,63 @@ function toggleSound(){
 // ─────────────────────────────────────────────
 // Firebase config
 // ─────────────────────────────────────────────
-async function startWithConfig(){
-  const apiKey      = "AIzaSyDxpf4sAvhaHATKuE6JuuM1-s5eoc95GFI";
-  const databaseURL = "https://k-restaurante-816c7-default-rtdb.firebaseio.com";
-  const projectId   = "k-restaurante-816c7";
-  const appId       = "1:583847298532:web:41992c3a2a9dc698f5f3f1";
-
+async function startNtfy(){
+  const channel="rk-fv6lcphe28";
   document.getElementById('cfg-overlay').style.display='none';
   document.getElementById('fb-label').textContent='A ligar…';
 
-  try{
-    const { initializeApp } = await import('https://www.gstatic.com/firebasejs/12.15.0/firebase-app.js');
-    const { getDatabase, ref, onValue, update } = await import('https://www.gstatic.com/firebasejs/12.15.0/firebase-database.js');
+  // _fbUpdate: just update local state (no remote DB)
+  window._fbUpdate=(id,status)=>{
+    if(orders[id]){ orders[id].status=status; render(); }
+  };
 
-    const app = initializeApp({ apiKey, authDomain:`${projectId}.firebaseapp.com`, databaseURL, projectId, appId });
-    const db = getDatabase(app);
+  const url='https://ntfy.sh/'+channel+'/sse';
+  const es=new EventSource(url);
 
-    const ordersRef = ref(db,'orders');
-    document.getElementById('fb-dot').className = 'connected';
-    document.getElementById('fb-label').textContent = 'Ligado';
+  es.onopen=()=>{
+    document.getElementById('fb-dot').className='connected';
+    document.getElementById('fb-label').textContent='Ligado';
+    showToast('A aguardar pedidos…');
+  };
 
-    onValue(ordersRef, snap=>{
-      const data = snap.val()||{};
-      const prevIds = new Set(Object.keys(orders));
-      orders = {};
-
-      Object.entries(data).forEach(([id,o])=>{
-        orders[id] = {...o, id};
-        if(!prevIds.has(id)){
-          orders[id]._new = true;
-          playNotif();
-          showToast(`Novo pedido — Mesa ${o.mesa}`);
-        }
+  es.onmessage=e=>{
+    try{
+      const msg=JSON.parse(e.data);
+      if(!msg.message) return;
+      const lines=msg.message.split('\n');
+      const mesaMatch=lines[0].match(/Mesa (\d+)/);
+      const totalMatch=lines[1].match(/([\d.,]+)/);
+      const mesa=mesaMatch?mesaMatch[1]:'?';
+      const total=totalMatch?parseInt(totalMatch[1].replace(/[.,]/g,''))||0:0;
+      const itemLines=lines.slice(3).filter(l=>l.trim());
+      const items=itemLines.map(l=>{
+        const m=l.match(/(\d+)x (.+)/);
+        return m?{name:m[2],qty:parseInt(m[1]),unitPrice:0,subtotal:0}:{name:l,qty:1,unitPrice:0,subtotal:0};
       });
-
+      const id='ntfy_'+msg.id;
+      if(orders[id]) return;
+      orders[id]={id,mesa,timestamp:Date.now(),status:'pending',total,items,_new:true};
+      playNotif();
+      showToast('Novo pedido — Mesa '+mesa);
       render();
-    }, err=>{
-      document.getElementById('fb-dot').className = 'error';
-      document.getElementById('fb-label').textContent = 'Erro';
-      showToast('Erro Firebase: '+err.message);
-    });
+    }catch(err){}
+  };
 
-    // Expose update fn globally
-    window._fbUpdate = (id, status)=>{
-      const r = ref(db,`orders/${id}`);
-      update(r,{status});
-    };
-
-  }catch(e){
-    document.getElementById('fb-dot').className = 'error';
-    document.getElementById('fb-label').textContent = 'Erro de ligação';
-    showToast('Falha ao ligar: '+e.message);
-  }
+  es.onerror=()=>{
+    document.getElementById('fb-dot').className='error';
+    document.getElementById('fb-label').textContent='Reconectar…';
+  };
 }
 
 // ─────────────────────────────────────────────
 // Demo mode
 // ─────────────────────────────────────────────
-const DEMO_NAMES = ['Sashimi Misto','Edamame','Gyoza Camarão','Ramen Tonkotsu','California Roll','Tempura Legumes','Wagyu Tataki','Miso Sopa','Tuna Tartar','Uramaki Salmão'];
-let demoCounter = 1;
 
-function startDemo(){
-  demoMode = true;
-  document.getElementById('cfg-overlay').style.display='none';
-  document.getElementById('demo-badge').style.display='';
-  document.getElementById('fb-dot').className = 'connected';
-  document.getElementById('fb-label').textContent = 'Demo';
 
-  window._fbUpdate = (id, status)=>{
-    if(orders[id]){
-      orders[id].status = status;
-      render();
-    }
-  };
 
-  // Generate a few orders immediately
-  for(let i=0;i<3;i++) addDemoOrder(false);
-  render();
 
-  // New orders randomly
-  demoInterval = setInterval(()=>{
-    if(Math.random()<0.35) addDemoOrder(true);
-  }, 8000);
-}
 
-function addDemoOrder(notify=true){
-  const id = 'demo_'+Date.now()+'_'+Math.random().toString(36).slice(2,6);
-  const numItems = Math.ceil(Math.random()*4)+1;
-  const items = [];
-  const names = [...DEMO_NAMES].sort(()=>Math.random()-.5).slice(0,numItems);
-  let total = 0;
-  names.forEach(n=>{
-    const qty = Math.ceil(Math.random()*3);
-    const unitPrice = (Math.floor(Math.random()*6)+1)*1000 + Math.floor(Math.random()*5)*500;
-    items.push({name:n,qty,unitPrice,subtotal:unitPrice*qty});
-    total += unitPrice*qty;
-  });
-  orders[id] = {
-    id, mesa: Math.ceil(Math.random()*12),
-    timestamp: Date.now(),
-    status:'pending',
-    total, items, _new: notify
-  };
-  if(notify){ playNotif(); showToast(`Novo pedido — Mesa ${orders[id].mesa}`); }
-}
+
 
 // ─────────────────────────────────────────────
 // Render
@@ -659,7 +611,7 @@ function showToast(msg){
 setInterval(()=>{ if(Object.keys(orders).length) render(); }, 60000);
 
 // Auto-connect on load
-window.addEventListener('DOMContentLoaded', ()=>{ startWithConfig(); });
+window.addEventListener('DOMContentLoaded', ()=>{ startNtfy(); });
 </script>
 </body>
 </html>
