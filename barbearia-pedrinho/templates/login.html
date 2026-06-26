@@ -1,0 +1,85 @@
+{% extends "base.html" %}
+{% block title %}Login — Barbearia do Pedrinho{% endblock %}
+
+{% block content %}
+<div class="login-page">
+    <div class="login-card">
+        <div class="login-header">
+            <div class="login-logo">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5">
+                    <path d="M3 3l7.5 7.5M3 21l7.5-7.5M21 3l-7.5 7.5M21 21l-7.5-7.5M12 8v8M8 12h8"/>
+                </svg>
+            </div>
+            <h1 class="login-title">Barbearia <span class="gold">do Pedrinho</span></h1>
+            <p class="login-subtitle">Sistema de Gestão de Cortes</p>
+        </div>
+
+        {% with messages = get_flashed_messages(with_categories=true) %}
+        {% if messages %}
+        {% for category, message in messages %}
+        <div class="flash flash-{{ category }}">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="9"/><path d="M12 8v4M12 16h.01"/></svg>
+            {{ message }}
+        </div>
+        {% endfor %}
+        {% endif %}
+        {% endwith %}
+
+        <form method="POST" class="login-form">
+            <div class="form-group">
+                <label for="username" class="form-label">Utilizador</label>
+                <div class="input-wrapper">
+                    <svg class="input-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5">
+                        <path d="M20 21v-2a4 4 0 00-4-4H8a4 4 0 00-4 4v2M12 11a4 4 0 100-8 4 4 0 000 8z"/>
+                    </svg>
+                    <input type="text" id="username" name="username" class="form-input" placeholder="Ex: arthur" autocomplete="username" required />
+                </div>
+            </div>
+
+            <div class="form-group">
+                <label for="senha" class="form-label">Senha</label>
+                <div class="input-wrapper">
+                    <svg class="input-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5">
+                        <rect x="3" y="11" width="18" height="11" rx="2"/><path d="M7 11V7a5 5 0 0110 0v4"/>
+                    </svg>
+                    <input type="password" id="senha" name="senha" class="form-input" placeholder="••••••••" autocomplete="current-password" required />
+                    <button type="button" class="toggle-password" onclick="togglePassword()">
+                        <svg id="eye-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5">
+                            <path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/>
+                        </svg>
+                    </button>
+                </div>
+            </div>
+
+            <button type="submit" class="btn-primary btn-full">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <path d="M15 3h4a2 2 0 012 2v14a2 2 0 01-2 2h-4M10 17l5-5-5-5M13 12H3"/>
+                </svg>
+                Entrar
+            </button>
+        </form>
+
+        <div class="login-barbeiros">
+            <p class="barbeiros-hint">Barbeiros:</p>
+            <div class="barbeiros-grid">
+                <span class="barbeiro-chip" onclick="fillLogin('arthur')">Arthur Tungo</span>
+                <span class="barbeiro-chip" onclick="fillLogin('klein')">Klein</span>
+                <span class="barbeiro-chip" onclick="fillLogin('vemba')">Vemba</span>
+                <span class="barbeiro-chip" onclick="fillLogin('bernardo')">Bernardo</span>
+                <span class="barbeiro-chip" onclick="fillLogin('baldie')">Baldie</span>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+function fillLogin(username) {
+    document.getElementById('username').value = username;
+    document.getElementById('senha').focus();
+}
+function togglePassword() {
+    const input = document.getElementById('senha');
+    input.type = input.type === 'password' ? 'text' : 'password';
+}
+</script>
+{% endblock %}

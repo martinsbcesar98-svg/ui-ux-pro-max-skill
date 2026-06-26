@@ -1,0 +1,128 @@
+{% extends "base.html" %}
+{% block title %}Histórico — {{ barbeiro.nome }}{% endblock %}
+
+{% block content %}
+<div class="page-header">
+    <div>
+        <h1 class="page-title">Histórico de <span class="gold">Cortes</span></h1>
+        <p class="page-subtitle">{{ barbeiro.nome }} — {{ mes_nome }} {{ ano_atual }}</p>
+    </div>
+    <a href="{{ url_for('registrar') }}" class="btn-primary">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="9"/><path d="M12 8v8M8 12h8"/></svg>
+        Novo Corte
+    </a>
+</div>
+
+<!-- Filtro -->
+<div class="filter-bar">
+    <form method="GET" class="filter-form">
+        <div class="filter-group">
+            <label class="filter-label">Mês</label>
+            <select name="mes" class="filter-select" onchange="this.form.submit()">
+                {% for num, nome in meses.items() %}
+                <option value="{{ num }}" {% if num == mes_atual %}selected{% endif %}>{{ nome }}</option>
+                {% endfor %}
+            </select>
+        </div>
+        <div class="filter-group">
+            <label class="filter-label">Ano</label>
+            <select name="ano" class="filter-select" onchange="this.form.submit()">
+                {% for a in anos %}
+                <option value="{{ a }}" {% if a == ano_atual %}selected{% endif %}>{{ a }}</option>
+                {% endfor %}
+            </select>
+        </div>
+    </form>
+</div>
+
+<!-- Resumo Compacto -->
+<div class="stats-grid stats-compact">
+    <div class="stat-card">
+        <div class="stat-icon stat-icon-blue">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2"/></svg>
+        </div>
+        <div class="stat-info">
+            <span class="stat-label">Cortes</span>
+            <span class="stat-value">{{ resumo.total_cortes }}</span>
+        </div>
+    </div>
+    <div class="stat-card">
+        <div class="stat-icon stat-icon-gold">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M12 1v22M17 5H9.5a3.5 3.5 0 000 7h5a3.5 3.5 0 010 7H6"/></svg>
+        </div>
+        <div class="stat-info">
+            <span class="stat-label">Total Bruto</span>
+            <span class="stat-value gold">{{ "{:,.0f}".format(resumo.total_bruto) }} <small>KZS</small></span>
+        </div>
+    </div>
+    <div class="stat-card">
+        <div class="stat-icon stat-icon-green">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M9 14l6-6M9 8h6M9 16h4"/></svg>
+        </div>
+        <div class="stat-info">
+            <span class="stat-label">Comissão (20%)</span>
+            <span class="stat-value green">{{ "{:,.0f}".format(resumo.comissao) }} <small>KZS</small></span>
+        </div>
+    </div>
+</div>
+
+<!-- Lista de Cortes -->
+<div class="section">
+    <div class="section-header">
+        <h2 class="section-title">Todos os Registos</h2>
+        <span class="badge">{{ cortes|length }}</span>
+    </div>
+
+    {% if cortes %}
+    <div class="table-wrapper">
+        <table class="table">
+            <thead>
+                <tr>
+                    <th>Data</th>
+                    <th>Serviço</th>
+                    <th class="text-right">Valor</th>
+                    <th class="text-right">Comissão</th>
+                    <th>Obs.</th>
+                    <th class="text-center">Ação</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for c in cortes %}
+                <tr>
+                    <td class="date-cell">{{ c.data[8:10] }}/{{ c.data[5:7] }}/{{ c.data[:4] }}</td>
+                    <td>{{ c.servico_nome }}</td>
+                    <td class="text-right gold">{{ "{:,.0f}".format(c.valor) }} KZS</td>
+                    <td class="text-right green">{{ "{:,.0f}".format(c.valor * 0.20) }} KZS</td>
+                    <td class="muted">{{ c.observacao or '—' }}</td>
+                    <td class="text-center">
+                        <form method="POST" action="{{ url_for('deletar', corte_id=c.id) }}"
+                              onsubmit="return confirm('Confirmar eliminação deste registo?')">
+                            <button type="submit" class="btn-danger-sm" title="Eliminar">
+                                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                    <path d="M3 6h18M19 6v14a2 2 0 01-2 2H7a2 2 0 01-2-2V6m3 0V4a1 1 0 011-1h4a1 1 0 011 1v2"/>
+                                </svg>
+                            </button>
+                        </form>
+                    </td>
+                </tr>
+                {% endfor %}
+            </tbody>
+            <tfoot>
+                <tr class="tfoot-total">
+                    <td colspan="2"><strong>TOTAL DO MÊS</strong></td>
+                    <td class="text-right"><strong class="gold">{{ "{:,.0f}".format(resumo.total_bruto) }} KZS</strong></td>
+                    <td class="text-right"><strong class="green">{{ "{:,.0f}".format(resumo.comissao) }} KZS</strong></td>
+                    <td colspan="2"></td>
+                </tr>
+            </tfoot>
+        </table>
+    </div>
+    {% else %}
+    <div class="empty-state">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1"><path d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2"/></svg>
+        <p>Nenhum corte registado em {{ mes_nome }} {{ ano_atual }}.</p>
+        <a href="{{ url_for('registrar') }}" class="btn-outline">Registar primeiro corte</a>
+    </div>
+    {% endif %}
+</div>
+{% endblock %}
