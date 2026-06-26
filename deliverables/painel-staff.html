@@ -665,14 +665,19 @@ function startNtfy(){
 
 function parseOrder(msg){
   const lines=msg.message.split('\n');
-  const mesaMatch=lines[0] && lines[0].match(/Mesa\s*(\d+)/i);
-  const totalMatch=lines[1] && lines[1].match(/([\d.,]+)/);
-  const mesa=mesaMatch?mesaMatch[1]:'?';
-  const total=totalMatch?parseInt(totalMatch[1].replace(/\./g,'').replace(',',''))||0:0;
-  const itemLines=lines.slice(3).filter(l=>l.trim());
+  // Format: MESA:N / TOTAL:N / --- / Qx Name|unit|sub
+  const mesaLine=lines.find(l=>l.startsWith('MESA:'));
+  const totalLine=lines.find(l=>l.startsWith('TOTAL:'));
+  const mesa=mesaLine?mesaLine.replace('MESA:','').trim():'?';
+  const total=totalLine?parseInt(totalLine.replace('TOTAL:','').trim())||0:0;
+  const itemLines=lines.filter(l=>l.includes('x ')&&!l.startsWith('MESA')&&!l.startsWith('TOTAL')&&l!=='---');
   const items=itemLines.map(l=>{
-    const m=l.match(/(\d+)x\s+(.+)/);
-    return m?{name:m[2].trim(),qty:parseInt(m[1])}:{name:l.trim(),qty:1};
+    const parts=l.split('|');
+    const qname=parts[0]||'';
+    const m=qname.match(/(\d+)x\s+(.+)/);
+    const unitPrice=parts[1]?parseInt(parts[1])||0:0;
+    const subtotal=parts[2]?parseInt(parts[2])||0:0;
+    return m?{name:m[2].trim(),qty:parseInt(m[1]),unitPrice,subtotal}:{name:qname.trim(),qty:1,unitPrice:0,subtotal:0};
   }).filter(i=>i.name);
 
   const id='ntfy_'+(msg.id||Date.now()+'_'+Math.random().toString(36).slice(2,6));
@@ -831,6 +836,7 @@ function render(){
           <div class="item-row">
             <span class="item-qty">${it.qty}×</span>
             <span class="item-name">${it.name}</span>
+            ${it.subtotal?`<span style="font-size:11px;color:var(--stone-2);font-variant-numeric:tabular-nums;white-space:nowrap">${fmt(it.subtotal)}</span>`:''}
           </div>`).join('')}
       </div>
       <div class="card-actions">
