@@ -513,22 +513,17 @@ footer{border-top:1px solid var(--line);padding:52px 20px 36px;background:var(--
 
 <!-- FIREBASE SDK -->
 <script type="module">
-import{initializeApp}from'https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js';
-import{getDatabase,ref,push,serverTimestamp,onValue}from'https://www.gstatic.com/firebasejs/10.12.2/firebase-database.js';
+import{initializeApp}from'https://www.gstatic.com/firebasejs/12.15.0/firebase-app.js';
+import{getDatabase,ref,push,serverTimestamp,onValue}from'https://www.gstatic.com/firebasejs/12.15.0/firebase-database.js';
 
-/* ══════════════════════════════════════
-   🔧 CONFIGURAÇÃO FIREBASE
-   Substitua pelos valores do seu projeto:
-   firebase.google.com → Console → Project Settings → Your apps → Config
-   ══════════════════════════════════════ */
 const firebaseConfig = {
-  apiKey:            "COLE_AQUI_apiKey",
-  authDomain:        "COLE_AQUI_authDomain",
-  databaseURL:       "COLE_AQUI_databaseURL",
-  projectId:         "COLE_AQUI_projectId",
-  storageBucket:     "COLE_AQUI_storageBucket",
-  messagingSenderId: "COLE_AQUI_messagingSenderId",
-  appId:             "COLE_AQUI_appId"
+  apiKey:            "AIzaSyDxpf4sAvhaHATKuE6JuuM1-s5eoc95GFI",
+  authDomain:        "k-restaurante-816c7.firebaseapp.com",
+  databaseURL:       "https://k-restaurante-816c7-default-rtdb.firebaseio.com",
+  projectId:         "k-restaurante-816c7",
+  storageBucket:     "k-restaurante-816c7.firebasestorage.app",
+  messagingSenderId: "583847298532",
+  appId:             "1:583847298532:web:41992c3a2a9dc698f5f3f1"
 };
 
 let db=null;
