@@ -1,0 +1,617 @@
+<!DOCTYPE html>
+<html lang="pt" data-theme="dark">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width,initial-scale=1"/>
+<title>Restaurante K — Painel de Pedidos</title>
+<link rel="preconnect" href="https://fonts.googleapis.com"/>
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin/>
+<link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@400;500;600;700&family=Inter:wght@300;400;500;600&display=swap" rel="stylesheet"/>
+<style>
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+
+:root{
+  --ink:#0f0c09;--ink-2:#18130e;--ink-3:#201810;--ink-4:#2a1f14;
+  --gold:#c9a24b;--gold-soft:#e8cc88;--gold-pale:#f5e9ca;
+  --gold-dim:rgba(201,162,75,.09);--gold-glow:rgba(201,162,75,.18);
+  --lacquer:#8c2d2a;--lacquer-soft:#b54440;
+  --washi:#f2e9d6;--washi-dim:rgba(242,233,214,.7);
+  --stone:#8e8070;--stone-light:#b0a490;
+  --line:rgba(201,162,75,.15);--line-strong:rgba(201,162,75,.28);
+  --ease:cubic-bezier(.16,1,.3,1);
+  --r:12px;
+  
+  /* status colors */
+  --pending:#c9a24b;
+  --preparing:#3b82f6;
+  --ready:#22c55e;
+  --delivered:#6b7280;
+}
+
+html,body{height:100%;overflow:hidden}
+
+body{
+  background:var(--ink);
+  color:var(--washi);
+  font-family:'Inter',sans-serif;
+  font-size:14px;
+  display:flex;
+  flex-direction:column;
+}
+
+/* ── Header ── */
+header{
+  display:flex;align-items:center;justify-content:space-between;
+  padding:0 24px;height:60px;
+  background:var(--ink-2);
+  border-bottom:1px solid var(--line);
+  flex-shrink:0;
+}
+.logo{
+  font-family:'Cormorant Garamond',serif;
+  font-size:22px;font-weight:600;
+  background:linear-gradient(135deg,var(--gold) 0%,var(--gold-soft) 60%,var(--gold) 100%);
+  -webkit-background-clip:text;-webkit-text-fill-color:transparent;
+  letter-spacing:.04em;
+}
+.logo span{color:var(--lacquer-soft);-webkit-text-fill-color:var(--lacquer-soft)}
+.header-meta{display:flex;align-items:center;gap:20px}
+#fb-dot{
+  width:8px;height:8px;border-radius:50%;
+  background:#6b7280;
+  transition:background .3s;
+}
+#fb-dot.connected{background:#22c55e;box-shadow:0 0 6px #22c55e99}
+#fb-dot.error{background:var(--lacquer-soft)}
+.fb-label{font-size:12px;color:var(--stone);letter-spacing:.04em}
+#clock{
+  font-size:13px;font-weight:500;
+  color:var(--stone-light);
+  font-variant-numeric:tabular-nums;
+  letter-spacing:.05em;
+}
+.btn-clear{
+  padding:6px 14px;border-radius:6px;
+  background:transparent;border:1px solid var(--line-strong);
+  color:var(--stone);font-size:12px;cursor:pointer;
+  transition:all .2s;
+}
+.btn-clear:hover{background:var(--gold-dim);color:var(--gold)}
+
+/* ── Config overlay ── */
+#cfg-overlay{
+  position:fixed;inset:0;z-index:1000;
+  background:rgba(15,12,9,.95);
+  display:flex;align-items:center;justify-content:center;
+  backdrop-filter:blur(8px);
+}
+.cfg-box{
+  background:var(--ink-3);
+  border:1px solid var(--line-strong);
+  border-radius:16px;
+  padding:40px;
+  max-width:520px;width:90%;
+}
+.cfg-box h2{
+  font-family:'Cormorant Garamond',serif;
+  font-size:28px;font-weight:600;
+  background:linear-gradient(135deg,var(--gold),var(--gold-soft));
+  -webkit-background-clip:text;-webkit-text-fill-color:transparent;
+  margin-bottom:8px;
+}
+.cfg-box p{color:var(--stone-light);font-size:13px;line-height:1.6;margin-bottom:28px}
+.cfg-fields{display:flex;flex-direction:column;gap:14px;margin-bottom:24px}
+.cfg-field label{display:block;font-size:11px;font-weight:500;color:var(--gold);letter-spacing:.08em;text-transform:uppercase;margin-bottom:5px}
+.cfg-field input{
+  width:100%;padding:10px 14px;
+  background:var(--ink-2);border:1px solid var(--line-strong);
+  border-radius:8px;color:var(--washi);font-size:13px;
+  outline:none;transition:border .2s;
+}
+.cfg-field input:focus{border-color:var(--gold)}
+.btn-cfg{
+  width:100%;padding:14px;border-radius:8px;
+  background:linear-gradient(135deg,var(--gold),var(--gold-soft));
+  border:none;color:var(--ink);font-weight:600;font-size:14px;
+  cursor:pointer;transition:opacity .2s;
+}
+.btn-cfg:hover{opacity:.9}
+.cfg-skip{text-align:center;margin-top:16px}
+.cfg-skip a{color:var(--stone);font-size:12px;cursor:pointer;text-decoration:underline}
+
+/* ── Tabs (status columns) ── */
+.tabs{
+  display:flex;border-bottom:1px solid var(--line);
+  padding:0 24px;gap:4px;
+  background:var(--ink-2);flex-shrink:0;
+}
+.tab{
+  padding:12px 20px;
+  background:none;border:none;
+  color:var(--stone);font-size:13px;font-weight:500;
+  cursor:pointer;position:relative;
+  transition:color .2s;
+  white-space:nowrap;
+}
+.tab::after{
+  content:'';position:absolute;bottom:0;left:0;right:0;
+  height:2px;background:var(--gold);
+  transform:scaleX(0);transition:transform .2s var(--ease);
+}
+.tab.active{color:var(--gold-soft)}
+.tab.active::after{transform:scaleX(1)}
+.tab-badge{
+  display:inline-flex;align-items:center;justify-content:center;
+  width:18px;height:18px;border-radius:50%;
+  font-size:10px;font-weight:600;
+  margin-left:6px;
+  background:var(--line-strong);color:var(--stone-light);
+  transition:background .2s,color .2s;
+}
+.tab.active .tab-badge{background:var(--gold);color:var(--ink)}
+
+/* ── Board ── */
+#board{
+  flex:1;overflow-y:auto;
+  padding:24px;
+  display:grid;
+  grid-template-columns:repeat(auto-fill,minmax(320px,1fr));
+  gap:16px;
+  align-content:start;
+}
+
+#board::-webkit-scrollbar{width:6px}
+#board::-webkit-scrollbar-thumb{background:var(--line-strong);border-radius:3px}
+
+/* ── Order card ── */
+.order-card{
+  background:var(--ink-3);
+  border:1px solid var(--line);
+  border-radius:var(--r);
+  overflow:hidden;
+  transition:transform .2s var(--ease),box-shadow .2s;
+  animation:cardIn .35s var(--ease);
+}
+@keyframes cardIn{from{opacity:0;transform:translateY(12px)}to{opacity:1;transform:none}}
+
+.order-card.new-flash{
+  animation:cardIn .35s var(--ease),flashBorder 1.2s ease 3;
+}
+@keyframes flashBorder{
+  0%,100%{box-shadow:none;border-color:var(--line)}
+  50%{box-shadow:0 0 0 2px var(--gold);border-color:var(--gold)}
+}
+
+.order-card:hover{
+  transform:translateY(-2px);
+  box-shadow:0 8px 24px rgba(0,0,0,.4);
+}
+
+.card-header{
+  display:flex;align-items:center;justify-content:space-between;
+  padding:14px 16px;
+  border-bottom:1px solid var(--line);
+  background:var(--gold-dim);
+}
+.card-mesa{
+  font-family:'Cormorant Garamond',serif;
+  font-size:22px;font-weight:700;
+  color:var(--gold-soft);
+}
+.card-meta{text-align:right}
+.card-time{font-size:11px;color:var(--stone);font-variant-numeric:tabular-nums}
+.card-total{font-size:13px;font-weight:600;color:var(--washi);margin-top:2px}
+
+.status-pill{
+  display:inline-flex;align-items:center;gap:5px;
+  padding:4px 10px;border-radius:20px;
+  font-size:11px;font-weight:600;letter-spacing:.04em;
+  border:1px solid currentColor;
+  margin-left:10px;
+}
+.status-pill.pending{color:var(--pending)}
+.status-pill.preparing{color:var(--preparing)}
+.status-pill.ready{color:var(--ready)}
+.status-pill.delivered{color:var(--delivered)}
+
+.card-items{padding:14px 16px}
+.item-row{
+  display:flex;align-items:baseline;justify-content:space-between;
+  padding:5px 0;
+  border-bottom:1px solid rgba(255,255,255,.04);
+}
+.item-row:last-child{border-bottom:none}
+.item-qty{
+  font-size:11px;font-weight:700;
+  color:var(--gold);
+  min-width:20px;
+}
+.item-name{
+  flex:1;padding:0 10px;
+  font-size:13px;color:var(--washi-dim);
+  line-height:1.4;
+}
+.item-price{font-size:12px;color:var(--stone-light);font-variant-numeric:tabular-nums}
+
+.card-actions{
+  display:flex;gap:8px;
+  padding:12px 16px;
+  border-top:1px solid var(--line);
+  background:rgba(0,0,0,.2);
+}
+.action-btn{
+  flex:1;padding:8px 6px;border-radius:8px;
+  border:none;font-size:12px;font-weight:600;cursor:pointer;
+  transition:all .2s;letter-spacing:.02em;
+}
+.action-btn.primary{
+  background:var(--gold);color:var(--ink);
+}
+.action-btn.primary:hover{background:var(--gold-soft)}
+.action-btn.secondary{
+  background:var(--line);color:var(--stone-light);border:1px solid var(--line-strong);
+}
+.action-btn.secondary:hover{color:var(--washi)}
+.action-btn.danger{
+  background:rgba(140,45,42,.25);color:var(--lacquer-soft);
+  border:1px solid rgba(140,45,42,.4);
+}
+.action-btn.danger:hover{background:rgba(140,45,42,.45)}
+
+/* ── Empty state ── */
+.empty-state{
+  grid-column:1/-1;
+  display:flex;flex-direction:column;align-items:center;justify-content:center;
+  gap:12px;
+  padding:80px 20px;
+  color:var(--stone);
+  text-align:center;
+}
+.empty-state svg{opacity:.25}
+.empty-state p{font-size:15px}
+.empty-state span{font-size:13px;opacity:.7}
+
+/* ── Audio notification indicator ── */
+#notif-btn{
+  display:flex;align-items:center;gap:6px;
+  padding:6px 12px;border-radius:6px;
+  background:transparent;border:1px solid var(--line-strong);
+  color:var(--stone);font-size:12px;cursor:pointer;
+  transition:all .2s;
+}
+#notif-btn:hover{background:var(--gold-dim);color:var(--gold)}
+#notif-btn.on{border-color:var(--gold);color:var(--gold)}
+
+/* ── Sound icon ── */
+.icon-sound-on, .icon-sound-off{display:none}
+#notif-btn.on .icon-sound-on{display:inline}
+#notif-btn:not(.on) .icon-sound-off{display:inline}
+
+/* ── Demo mode badge ── */
+.demo-badge{
+  padding:3px 10px;border-radius:20px;
+  background:rgba(140,45,42,.2);
+  border:1px solid rgba(140,45,42,.4);
+  color:var(--lacquer-soft);
+  font-size:11px;font-weight:500;
+  letter-spacing:.04em;
+}
+
+/* ── Toast ── */
+#toast{
+  position:fixed;bottom:24px;right:24px;
+  padding:12px 18px;border-radius:10px;
+  background:var(--ink-4);border:1px solid var(--line-strong);
+  color:var(--washi);font-size:13px;
+  box-shadow:0 8px 24px rgba(0,0,0,.5);
+  transform:translateY(20px);opacity:0;
+  transition:all .3s var(--ease);
+  z-index:500;
+  pointer-events:none;
+}
+#toast.show{transform:none;opacity:1}
+
+/* ── Responsive ── */
+@media(max-width:600px){
+  header{padding:0 16px}
+  .logo{font-size:18px}
+  #board{padding:12px;grid-template-columns:1fr}
+  .tabs{padding:0 12px;overflow-x:auto}
+  .header-meta{gap:10px}
+  #clock{display:none}
+}
+</style>
+</head>
+<body>
+
+<!-- Config overlay (auto-connect) -->
+<div id="cfg-overlay">
+  <div class="cfg-box" style="text-align:center">
+    <h2>Restaurante K</h2>
+    <p style="margin-bottom:32px">A ligar ao servidor de pedidos…</p>
+    <div style="width:16px;height:16px;border-radius:50%;background:#c9a24b;margin:0 auto 12px;animation:pulse 1s ease infinite"></div>
+    <style>@keyframes pulse{0%,100%{opacity:1}50%{opacity:.3}}</style>
+  </div>
+</div>
+
+<!-- Header -->
+<header>
+  <div class="logo">Restaurante <span>K</span> &mdash; Cozinha</div>
+  <div class="header-meta">
+    <div id="demo-badge" class="demo-badge" style="display:none">DEMO</div>
+    <button id="notif-btn" class="on" onclick="toggleSound()">
+      <span class="icon-sound-on">🔔</span>
+      <span class="icon-sound-off">🔕</span>
+      Som
+    </button>
+    <div id="fb-dot"></div>
+    <span class="fb-label" id="fb-label">A ligar…</span>
+    <div id="clock"></div>
+    <button class="btn-clear" onclick="clearDelivered()">Limpar Entregues</button>
+  </div>
+</header>
+
+<!-- Status tabs -->
+<div class="tabs">
+  <button class="tab active" data-filter="all" onclick="setFilter('all',this)">Todos <span class="tab-badge" id="badge-all">0</span></button>
+  <button class="tab" data-filter="pending" onclick="setFilter('pending',this)">🟡 Pendente <span class="tab-badge" id="badge-pending">0</span></button>
+  <button class="tab" data-filter="preparing" onclick="setFilter('preparing',this)">🔵 Em Preparação <span class="tab-badge" id="badge-preparing">0</span></button>
+  <button class="tab" data-filter="ready" onclick="setFilter('ready',this)">🟢 Pronto <span class="tab-badge" id="badge-ready">0</span></button>
+  <button class="tab" data-filter="delivered" onclick="setFilter('delivered',this)">⚪ Entregue <span class="tab-badge" id="badge-delivered">0</span></button>
+</div>
+
+<!-- Order board -->
+<div id="board"></div>
+
+<!-- Toast -->
+<div id="toast"></div>
+
+<script>
+// ─────────────────────────────────────────────
+// State
+// ─────────────────────────────────────────────
+let orders = {}; // { id: orderObj }
+let filter = 'all';
+let soundOn = true;
+
+
+let unsubscribe = null;
+
+// ─────────────────────────────────────────────
+// Clock
+// ─────────────────────────────────────────────
+(function tickClock(){
+  const el = document.getElementById('clock');
+  if(el) el.textContent = new Date().toLocaleTimeString('pt-AO',{hour:'2-digit',minute:'2-digit',second:'2-digit'});
+  setTimeout(tickClock,1000);
+})();
+
+// ─────────────────────────────────────────────
+// Sound
+// ─────────────────────────────────────────────
+function playNotif(){
+  if(!soundOn) return;
+  try{
+    const ctx = new(window.AudioContext||window.webkitAudioContext)();
+    const notes = [880, 1100, 1320];
+    notes.forEach((freq,i)=>{
+      const o = ctx.createOscillator();
+      const g = ctx.createGain();
+      o.connect(g); g.connect(ctx.destination);
+      o.frequency.value = freq;
+      o.type = 'sine';
+      const t = ctx.currentTime + i*0.12;
+      g.gain.setValueAtTime(0,t);
+      g.gain.linearRampToValueAtTime(0.18,t+0.02);
+      g.gain.exponentialRampToValueAtTime(0.001,t+0.35);
+      o.start(t); o.stop(t+0.35);
+    });
+  }catch(e){}
+}
+
+function toggleSound(){
+  soundOn = !soundOn;
+  const btn = document.getElementById('notif-btn');
+  btn.classList.toggle('on', soundOn);
+}
+
+// ─────────────────────────────────────────────
+// Firebase config
+// ─────────────────────────────────────────────
+async function startNtfy(){
+  const channel="rk-fv6lcphe28";
+  document.getElementById('cfg-overlay').style.display='none';
+  document.getElementById('fb-label').textContent='A ligar…';
+
+  // _fbUpdate: just update local state (no remote DB)
+  window._fbUpdate=(id,status)=>{
+    if(orders[id]){ orders[id].status=status; render(); }
+  };
+
+  const url='https://ntfy.sh/'+channel+'/sse';
+  const es=new EventSource(url);
+
+  es.onopen=()=>{
+    document.getElementById('fb-dot').className='connected';
+    document.getElementById('fb-label').textContent='Ligado';
+    showToast('A aguardar pedidos…');
+  };
+
+  es.onmessage=e=>{
+    try{
+      const msg=JSON.parse(e.data);
+      if(!msg.message) return;
+      const lines=msg.message.split('\n');
+      const mesaMatch=lines[0].match(/Mesa (\d+)/);
+      const totalMatch=lines[1].match(/([\d.,]+)/);
+      const mesa=mesaMatch?mesaMatch[1]:'?';
+      const total=totalMatch?parseInt(totalMatch[1].replace(/[.,]/g,''))||0:0;
+      const itemLines=lines.slice(3).filter(l=>l.trim());
+      const items=itemLines.map(l=>{
+        const m=l.match(/(\d+)x (.+)/);
+        return m?{name:m[2],qty:parseInt(m[1]),unitPrice:0,subtotal:0}:{name:l,qty:1,unitPrice:0,subtotal:0};
+      });
+      const id='ntfy_'+msg.id;
+      if(orders[id]) return;
+      orders[id]={id,mesa,timestamp:Date.now(),status:'pending',total,items,_new:true};
+      playNotif();
+      showToast('Novo pedido — Mesa '+mesa);
+      render();
+    }catch(err){}
+  };
+
+  es.onerror=()=>{
+    document.getElementById('fb-dot').className='error';
+    document.getElementById('fb-label').textContent='Reconectar…';
+  };
+}
+
+// ─────────────────────────────────────────────
+// Demo mode
+// ─────────────────────────────────────────────
+
+
+
+
+
+
+
+// ─────────────────────────────────────────────
+// Render
+// ─────────────────────────────────────────────
+const STATUS_LABELS = {pending:'Pendente',preparing:'Em Preparação',ready:'Pronto',delivered:'Entregue'};
+const fmt = v => new Intl.NumberFormat('pt-AO').format(v)+' Kz';
+
+function timeAgo(ts){
+  const diff = Math.floor((Date.now()-ts)/1000);
+  if(diff<60) return diff+'s';
+  if(diff<3600) return Math.floor(diff/60)+'min';
+  return Math.floor(diff/3600)+'h';
+}
+
+function nextStatus(s){
+  return {pending:'preparing',preparing:'ready',ready:'delivered'}[s]||null;
+}
+function nextLabel(s){
+  return {pending:'Iniciar Preparação',preparing:'Marcar Pronto',ready:'Marcar Entregue'}[s]||null;
+}
+
+function render(){
+  const board = document.getElementById('board');
+
+  // Sort: newest first, then by status order
+  const statusOrder = {pending:0,preparing:1,ready:2,delivered:3};
+  const list = Object.values(orders).sort((a,b)=>{
+    if(filter!=='all') return b.timestamp-a.timestamp;
+    const sd = statusOrder[a.status]-statusOrder[b.status];
+    return sd!==0?sd:b.timestamp-a.timestamp;
+  });
+
+  const filtered = filter==='all'?list:list.filter(o=>o.status===filter);
+
+  // Update badges
+  const counts = {all:list.length,pending:0,preparing:0,ready:0,delivered:0};
+  list.forEach(o=>counts[o.status]=(counts[o.status]||0)+1);
+  Object.keys(counts).forEach(k=>{
+    const el=document.getElementById('badge-'+k);
+    if(el) el.textContent=counts[k];
+  });
+
+  if(!filtered.length){
+    board.innerHTML=`<div class="empty-state">
+      <svg width="48" height="48" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1">
+        <path stroke-linecap="round" stroke-linejoin="round" d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2"/>
+      </svg>
+      <p>Sem pedidos ${filter==='all'?'':'nesta categoria'}</p>
+      <span>${filter==='all'?'Os novos pedidos aparecem aqui automaticamente':'Mude de separador para ver outros pedidos'}</span>
+    </div>`;
+    return;
+  }
+
+  board.innerHTML = filtered.map(o=>{
+    const next = nextStatus(o.status);
+    const nextLbl = nextLabel(o.status);
+    const isNew = o._new;
+    return `
+    <div class="order-card${isNew?' new-flash':''}" id="card-${o.id}">
+      <div class="card-header">
+        <div>
+          <div class="card-mesa">Mesa ${o.mesa}</div>
+          <span class="status-pill ${o.status}">${STATUS_LABELS[o.status]||o.status}</span>
+        </div>
+        <div class="card-meta">
+          <div class="card-time">${timeAgo(o.timestamp)} atrás</div>
+          <div class="card-total">${fmt(o.total)}</div>
+        </div>
+      </div>
+      <div class="card-items">
+        ${(o.items||[]).map(it=>`
+          <div class="item-row">
+            <span class="item-qty">${it.qty}×</span>
+            <span class="item-name">${it.name}</span>
+            <span class="item-price">${fmt(it.subtotal||it.unitPrice*it.qty)}</span>
+          </div>
+        `).join('')}
+      </div>
+      <div class="card-actions">
+        ${next?`<button class="action-btn primary" onclick="advance('${o.id}','${next}')">${nextLbl}</button>`:''}
+        ${o.status!=='delivered'?`<button class="action-btn danger" onclick="advance('${o.id}','delivered')">Entregue</button>`:''}
+        ${o.status==='delivered'?`<button class="action-btn secondary" onclick="removeOrder('${o.id}')">Remover</button>`:''}
+      </div>
+    </div>`;
+  }).join('');
+
+  // Clear _new flags after render
+  Object.values(orders).forEach(o=>{ o._new=false; });
+}
+
+function advance(id, status){
+  if(window._fbUpdate) window._fbUpdate(id, status);
+  if(demoMode && orders[id]){
+    orders[id].status = status;
+    render();
+  }
+}
+
+function removeOrder(id){
+  delete orders[id];
+  render();
+}
+
+function clearDelivered(){
+  Object.keys(orders).forEach(id=>{
+    if(orders[id].status==='delivered') delete orders[id];
+  });
+  render();
+  showToast('Pedidos entregues removidos');
+}
+
+function setFilter(f, btn){
+  filter = f;
+  document.querySelectorAll('.tab').forEach(t=>t.classList.remove('active'));
+  btn.classList.add('active');
+  render();
+}
+
+// ─────────────────────────────────────────────
+// Toast
+// ─────────────────────────────────────────────
+let toastTimer;
+function showToast(msg){
+  const el = document.getElementById('toast');
+  el.textContent = msg;
+  el.classList.add('show');
+  clearTimeout(toastTimer);
+  toastTimer = setTimeout(()=>el.classList.remove('show'),3500);
+}
+
+// ─────────────────────────────────────────────
+// Auto-refresh time labels
+// ─────────────────────────────────────────────
+setInterval(()=>{ if(Object.keys(orders).length) render(); }, 60000);
+
+// Auto-connect on load
+window.addEventListener('DOMContentLoaded', ()=>{ startNtfy(); });
+</script>
+</body>
+</html>
