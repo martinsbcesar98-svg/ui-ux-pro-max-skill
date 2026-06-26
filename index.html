@@ -752,8 +752,12 @@ applyMode('mesa');updateCartUI();
 /* ── ntfy.sh order sender ── */
 window._sendOrder=async function(tableNum,cart,total){
   const channel="rk-fv6lcphe28";
-  const items=cart.map(c=>c.qty+'x '+c.item.name).join('\n');
-  const body='Mesa '+tableNum+'\nTotal: '+new Intl.NumberFormat('pt-AO').format(total)+' Kz\n\n'+items;
+  const itemLines=cart.map(c=>{
+    const unit=window._getPrice(c.item);
+    const sub=unit*c.qty;
+    return c.qty+'x '+c.item.name+'|'+unit+'|'+sub;
+  }).join('\n');
+  const body='MESA:'+tableNum+'\nTOTAL:'+total+'\n---\n'+itemLines;
   const resp=await fetch('https://ntfy.sh/'+channel,{
     method:'POST',
     headers:{'Title':'Pedido Mesa '+tableNum,'Priority':'high','Tags':'bell','Content-Type':'text/plain'},
