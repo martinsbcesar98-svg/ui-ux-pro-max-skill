@@ -748,6 +748,19 @@ document.addEventListener('keydown',e=>{if(e.key==='Escape'){closeItem();closeDr
 
 /* ═══ INIT ═══ */
 applyMode('mesa');updateCartUI();
+
+/* ── ntfy.sh order sender ── */
+window._sendOrder=async function(tableNum,cart,total){
+  const channel="rk-fv6lcphe28";
+  const items=cart.map(c=>c.qty+'x '+c.item.name).join('\n');
+  const body='Mesa '+tableNum+'\nTotal: '+new Intl.NumberFormat('pt-AO').format(total)+' Kz\n\n'+items;
+  const resp=await fetch('https://ntfy.sh/'+channel,{
+    method:'POST',
+    headers:{'Title':'Pedido Mesa '+tableNum,'Priority':'high','Tags':'bell','Content-Type':'text/plain'},
+    body:body
+  });
+  if(!resp.ok) throw new Error('ntfy '+resp.status);
+};
 </script>
 </body>
 </html>
