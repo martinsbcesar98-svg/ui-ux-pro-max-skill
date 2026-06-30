@@ -486,7 +486,7 @@ const NTFY_CHANNEL = 'tamashi-tlt-xp8k2m';
 const WA_NUMBER   = ''; // coloque aqui o número WhatsApp sem espaços ex: 244912345678
 
 // ══════════════════════════════════════
-// MENU DATA — atualize preços do PDF aqui
+// MENU DATA — preços do PDF actualizados
 // ══════════════════════════════════════
 const MENU = [
   {
@@ -496,10 +496,48 @@ const MENU = [
       {name:'Edamame', price:5500, desc:'Feijão de soja cozido a vapor com flor de sal'},
       {name:'Gyoza de Frango', price:9800, desc:'Dumplings de frango grelhados com molho ponzu'},
       {name:'Tempura de Legumes', price:9500, desc:'Legumes da época em tempura crocante com tentsuyu'},
-      {name:'Tempura de Camarão', price:12500, desc:'Camarão em tempura dourada com molho tentsuyu'},
+      {name:'Tempura de Camarão', price:11550, desc:'Camarão no tempurako frito'},
       {name:'Salada Sunomono', price:7800, desc:'Salada de pepino marinado com vinagre de arroz e sésamo'},
       {name:'Yakitori Misto', price:11000, desc:'Espetadas mistas de frango grelhadas ao estilo japonês'},
       {name:'Ceviche Tamashi', price:13500, desc:'Peixe fresco marinado em citrinos com coentros e pimento'},
+      {name:'Ceviche Shiromi', price:9790, desc:'Peixe branco aos cubos com ponzo, vinagrete japonês e especiarias'},
+      {name:'Ceviche de Shake', price:16390, desc:'Salmão aos cubos com ponzo, vinagrete japonês e especiarias'},
+      {name:'Kimuchi 3 Ilhas', price:11990, desc:'Cubos dos 3 peixes ao molho especial com alho francês e tobiko laranja'},
+      {name:'Shake', price:17380, desc:'Base de arroz, manga, abacate, milho, abacaxi, goma wakame, salmão cortado em cubos, sésamo e teriaki'},
+    ]
+  },
+  {
+    key:'tempura', label:'Tempura', kanji:'天ぷら',
+    tags:['tempura','quente'],
+    items:[
+      {name:'Tempura de Jalapeno no Shake', price:10340, desc:'Jalapeno em massa especial com batido de salmão grelhado e molho teriaky'},
+      {name:'Tempura de Camarão envolto em Amêndoa', price:12210, desc:'Camarão em massa especial envolvido por amêndoas'},
+      {name:'Tempura Tamashi', price:12650, desc:'Camarão em massa especial envolvido por salmão, philadelfia e amêndoas tostadas'},
+      {name:'Tempura Sakana', price:11880, desc:'Tempura de 3 peixes no tempurako com molho tataky e cebolinha'},
+    ]
+  },
+  {
+    key:'missoshiro', label:'Missoshiro', kanji:'味噌汁',
+    tags:['sopa'],
+    items:[
+      {name:'Missoshiro Shitaky', price:4290, desc:'Sopa de pasta de soja com especiarias chinesas e cogumelos'},
+      {name:'Missoshiro Especial', price:5280, desc:'Sopa de pasta de soja com especiarias, camarão e salmão'},
+    ]
+  },
+  {
+    key:'tartare', label:'Tartare', kanji:'タルタル',
+    tags:['raw','tartare'],
+    items:[
+      {name:'Tartare de Atum Crocante', price:13420, desc:'Atum com especiarias e sésamo coberto por cebola crocante'},
+      {name:'Tartare de Shake', price:16940, desc:'Salmão com abacate ao molho do chef, ovas e sésamo'},
+    ]
+  },
+  {
+    key:'crunchy', label:'Crunchy', kanji:'クランチー',
+    tags:['sushi','crunchy'],
+    items:[
+      {name:'Salmão Crunchy', price:11880, desc:'Nory com folha de arroz crocante e tartar de salmão à moda da ilha e molho do chef'},
+      {name:'Crunchy de Atum', price:9460, desc:'Nory com folha de arroz crocante e tartar de atum com molho spicy'},
     ]
   },
   {
@@ -513,6 +551,11 @@ const MENU = [
       {name:'Maguro Tataky da Ilha', price:11110, desc:'Sashimi de atum braseado com óleo de sésamo e molho de mostarda e mel'},
       {name:'Sashimi de Salmão · 7 peças', price:13500, desc:'Fatias de salmão fresco premium'},
       {name:'Sashimi Misto · 12 peças', price:18500, desc:'Seleção de sashimi de salmão, atum e peixe branco'},
+      {name:'Carpaccio de Atum ao Sésamo', price:9240, desc:'Fatias finas de atum ao molho sésamo e citrico'},
+      {name:'Sashimi 3 Ilhas · 15 peças', price:21780, desc:'Salmão, atum e peixe branco'},
+      {name:'Sashimi Shiromi', price:6380, desc:'Fatias finas de peixe branco'},
+      {name:'Sashimi Maguro', price:6490, desc:'Fatias finas de atum'},
+      {name:'Sashimi Shake', price:9460, desc:'Fatias finas de salmão'},
     ]
   },
   {
@@ -524,6 +567,51 @@ const MENU = [
       {name:'Nigiri de Camarão · 2 peças', price:5800, desc:'Arroz de sushi com camarão langostim'},
       {name:'Nigiri de Peixe Branco · 2 peças', price:5500, desc:'Arroz de sushi com peixe branco da época'},
       {name:'Nigiri de Vieira · 2 peças', price:8500, desc:'Arroz de sushi com vieira braseada'},
+      {name:'Mix Niguiris da Ilha · 7 peças', price:13200, desc:'Selecção do chef de niguiris'},
+      {name:'Maguro · 1 peça', price:2530, desc:'Uma fatia de atum sobre o arroz'},
+      {name:'Ebi · 1 peça', price:3080, desc:'Camarão cozido sobre o arroz'},
+      {name:'Shiromi · 1 peça', price:2530, desc:'Uma fatia de peixe branco sobre o arroz'},
+      {name:'Shake · 1 peça', price:4180, desc:'Uma fatia de salmão sobre o arroz'},
+    ]
+  },
+  {
+    key:'gunkan', label:'Gunkan', kanji:'軍艦',
+    tags:['sushi','gunkan'],
+    items:[
+      {name:'Gunkan Laranja', price:4290, desc:'Lâmina de cenoura, arroz e batido de salmão com laranja on top'},
+      {name:'Gunkan Shake Braseado', price:5280, desc:'Salmão enrolado, arroz e batido de salmão on top'},
+      {name:'Gunkan Maguro Spice', price:4070, desc:'Atum em salsa picante e cebola caramelizada'},
+      {name:'Gunkan Fusão da Ilha', price:5280, desc:'Salmão, philadelfia, marmelada e lima braseada'},
+      {name:'Gunkan Shake e Ebi', price:6490, desc:'Salmão enrolado, arroz, philadelfia e camarão on top'},
+      {name:'Gunkan Gasparzinho', price:4070, desc:'Peixe branco com tartar de camarão, alho francês e maionese'},
+      {name:'Gunkan Fresco', price:4180, desc:'Salmão com maionese e couve chinesa, cebolinha e limão'},
+    ]
+  },
+  {
+    key:'temaki', label:'Temaki', kanji:'手巻き',
+    tags:['sushi','temaki'],
+    items:[
+      {name:'Mangolé', price:10890, desc:'Nori, arroz, salmão batido com cebolinha e philadelfia, tudo frito em tempura'},
+      {name:'Special Shake', price:10780, desc:'Nori, arroz, batido de salmão com philadelfia e alho francês'},
+      {name:'Veggie', price:7150, desc:'Nori, arroz, fruta, alface e pepino'},
+      {name:'Ebi Tempura', price:10450, desc:'Nori, arroz, camarão tempura com philadelfia batido e cebolinha'},
+      {name:'Maguro', price:8580, desc:'Nori, arroz, atum batido, pepino e sésamo'},
+      {name:'Shake', price:10450, desc:'Nori, arroz, salmão batido com cebolinha'},
+    ]
+  },
+  {
+    key:'hossomaki', label:'Hossomaki', kanji:'細巻き',
+    tags:['sushi','hossomaki'],
+    items:[
+      {name:'Shake Abacate', price:11660, desc:'Salmão, philadelfia e abacate'},
+      {name:'Atum Picante', price:10010, desc:'Atum com picante japonês e óleo de sésamo'},
+      {name:'California', price:11550, desc:'Salmão, pepino, manga e abacate'},
+      {name:'Hot Philadelfia', price:6380, desc:'Salmão, arroz, alho-francês e philadelfia'},
+      {name:'Hot Tamashi', price:6380, desc:'Hossomaki de atum em massa especial envolvido por amêndoas, frito em tempura'},
+      {name:'Mini Hot', price:6380, desc:'Hossomaki de atum envolvido por peixe panado com tempura, philadelfia e teriaky'},
+      {name:'Philadelfia Especial', price:7700, desc:'Nori, salmão, camarão, philadelfia e cebolinha'},
+      {name:'Kapamaki', price:5148, desc:'Rolo pequeno com alga por fora, arroz e pepino'},
+      {name:'Shakemaki', price:6710, desc:'Rolo pequeno com alga por fora, arroz e salmão'},
     ]
   },
   {
@@ -532,10 +620,22 @@ const MENU = [
     items:[
       {name:'Uramaki California · 8 peças', price:11500, desc:'Camarão, abacate e pepino com ovas de peixe'},
       {name:'Uramaki Tamashi · 8 peças', price:15500, desc:'Salmão, cream cheese, abacate e molho especial da casa'},
-      {name:'Ebiten Uramaki · 8 peças', price:14800, desc:'Tempura de camarão, abacate e pepino'},
+      {name:'Ebiten Uramaki · 8 peças', price:12430, desc:'Tempura de camarão, abacate e pepino, com tartar de salmão por cima'},
       {name:'Spice Salmon · 8 peças', price:14200, desc:'Salmão picante com molho sriracha e cebolinho'},
       {name:'Avocado Roll · 8 peças', price:10500, desc:'Abacate cremoso com sésamo tostado'},
       {name:'Tamashi Signature · 8 peças', price:17500, desc:'Roll exclusivo da casa com ingredientes premium'},
+      {name:'Shake Skin', price:9130, desc:'Pele de salmão crocante, philadelfia, sésamo e folhas verdes'},
+      {name:'Shake Abacate', price:11110, desc:'Salmão, philadelfia, abacate e alho francês'},
+      {name:'Castelinho de Salmão Spicy', price:12840, desc:'Salmão, philadelfia com tartar de salmão spicy e alho francês'},
+      {name:'Ilha de Luanda', price:13310, desc:'Salmão, camarão, philadelfia e salmão braseado, salsa, teriaky'},
+      {name:'Passion Maki', price:12430, desc:'Uramaki com ovas de wasabi, salmão, philadelfia e maracujá'},
+      {name:'Boston Maki', price:11550, desc:'Batido de camarão cozido, maionese e alho porro'},
+      {name:'Ebi Maki', price:12980, desc:'Camarão tempura, salmão, panko e limão raspado'},
+      {name:'Salmão Laranja', price:12430, desc:'Batido de salmão grelhado, salmão, teriaky e laranja ralada'},
+      {name:'Atum Violeta', price:10780, desc:'Atum tataky, ponzo, rúcula, maionese e cebola caramelizada'},
+      {name:'Panko Especial', price:14190, desc:'Camarão em tempura, maionese, spicy, abacate, teriaky e tobico'},
+      {name:'Ebiten Especial', price:13420, desc:'Camarão em tempura de philadelfia, cebolinha, salmão e caitifi de batata doce'},
+      {name:'Castelinho Mix', price:11220, desc:'Salmão, atum, philadelfia com tartar de salmão e atum spicy e alho francês'},
     ]
   },
   {
@@ -546,6 +646,15 @@ const MENU = [
       {name:'Hot Spice Tuna · 8 peças', price:17800, desc:'Atum picante frito com molho sriracha'},
       {name:'Hot Tamashi · 8 peças', price:19500, desc:'Roll especial da casa braseado com molho teriyaki'},
       {name:'Dragon Roll · 8 peças', price:21000, desc:'Camarão tempura coberto com abacate e molho de amendoim'},
+      {name:'Mini Hot da Ilha', price:6490, desc:'Mini hot em panko com salmão braseado e teriaky'},
+    ]
+  },
+  {
+    key:'poke', label:'Poke', kanji:'ポキ',
+    tags:['poke','raw'],
+    items:[
+      {name:'Dois Peixes', price:16280, desc:'Base de arroz, abacate, milho, abacaxi, goma wakame atum e salmão cortado em cubos, sésamo e molho do chef'},
+      {name:'Atum', price:14300, desc:'Base de arroz, manga, abacate, milho, abacaxi, goma wakame, atum cortado em cubos e óleo de sésamo'},
     ]
   },
   {
@@ -556,6 +665,8 @@ const MENU = [
       {name:'Combinado Especial · 40 peças', price:72000, desc:'Seleção variada de 40 peças — para 2 pessoas'},
       {name:'Combinado Premium · 60 peças', price:105000, desc:'Experiência completa com 60 peças premium — para 3-4 pessoas'},
       {name:'Combinado Omakase · 80 peças', price:145000, desc:'A escolha do chefe — 80 peças da melhor seleção do dia'},
+      {name:'Sensei Musashi 40 unidades', price:54780, desc:'Combinação de peças sugestão do chef'},
+      {name:'Gueixa Mineko 20 unidades', price:32010, desc:'Combinação de peças sugestão do chef'},
     ]
   },
   {
@@ -563,10 +674,13 @@ const MENU = [
     tags:['quente','cozinha'],
     items:[
       {name:'Frango Teriyaki', price:18500, desc:'Frango grelhado com molho teriyaki, arroz e legumes'},
-      {name:'Yakissoba de Frango', price:16500, desc:'Massa japonesa salteada com frango e legumes da época'},
+      {name:'Yakissoba de Frango', price:11660, desc:'Massa japonesa salteada com frango e legumes da época'},
       {name:'Ramen Tamashi', price:19800, desc:'Caldo rico com massa ramen, frango, ovo e legumes'},
       {name:'Bife do Lombo', price:32000, desc:'Bife de lombo grelhado com molho teriyaki e guarnição'},
       {name:'Salmão Grelhado', price:25000, desc:'Salmão grelhado com molho de maracujá e legumes da época'},
+      {name:'Yakimeshi Camarão', price:15950, desc:'Arroz salteado ao estilo japonês com camarão, milho doce, ervilha e cebolinho'},
+      {name:'Yakissoba de Frango e Camarão', price:16500, desc:'Noodles salteados com frango, camarão e legumes coloridos'},
+      {name:'Yakissoba de Camarão', price:15180, desc:'Noodles salteados com camarão, pimento e brócolos'},
     ]
   },
   {
@@ -587,6 +701,7 @@ const MENU = [
       {name:'Cheesecake Matcha', price:8500, desc:'Cheesecake cremoso com pó de chá verde matcha'},
       {name:'Petit Gâteau de Chocolate', price:9500, desc:'Bolo quente de chocolate com coração fondant e gelado de baunilha'},
       {name:'Gelado · 1 bola', price:3500, desc:'Gelado artesanal — pergunte os sabores do dia'},
+      {name:'Orgasmo ou Prazeres', price:5060, desc:'Doce especial da casa com cobertura de chocolate e coco torrado'},
     ]
   },
   {
