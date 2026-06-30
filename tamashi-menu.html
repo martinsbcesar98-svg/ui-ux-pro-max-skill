@@ -397,12 +397,11 @@ footer{border-top:1px solid var(--line);padding:52px 20px 36px;background:var(--
     </div>
     <button class="drawer-close" id="drawerClose" aria-label="Fechar"><svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M18 6 6 18M6 6l12 12"/></svg></button>
   </div>
-  <div class="cart-items" id="cartItems">
-    <div class="cart-empty-state" id="cartEmpty">
-      <svg width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1" aria-hidden="true"><path d="M6 2 3 6v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2V6l-3-4z"/><line x1="3" y1="6" x2="21" y2="6"/><path d="M16 10a4 4 0 0 1-8 0"/></svg>
-      <p>O seu pedido está vazio.<br><em>Toque em qualquer prato para adicionar.</em></p>
-    </div>
+  <div class="cart-empty-state" id="cartEmpty">
+    <svg width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1" aria-hidden="true"><path d="M6 2 3 6v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2V6l-3-4z"/><line x1="3" y1="6" x2="21" y2="6"/><path d="M16 10a4 4 0 0 1-8 0"/></svg>
+    <p>O seu pedido está vazio.<br><em>Toque em qualquer prato para adicionar.</em></p>
   </div>
+  <div class="cart-items" id="cartItems"></div>
   <div class="cart-foot" id="cartFoot" style="display:none">
     <div class="cart-summary-row">
       <span class="cart-summary-label">Total estimado</span>
@@ -967,7 +966,7 @@ function updateCartUI(){
   const itemsEl = document.getElementById('cartItems');
   const empty = document.getElementById('cartEmpty');
 
-  if(!cart.length){ foot.style.display='none'; empty.style.display=''; itemsEl.innerHTML=''; itemsEl.appendChild(empty); return; }
+  if(!cart.length){ foot.style.display='none'; empty.style.display=''; itemsEl.innerHTML=''; return; }
   foot.style.display='';
   empty.style.display='none';
 
