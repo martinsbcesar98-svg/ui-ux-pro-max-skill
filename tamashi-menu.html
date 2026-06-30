@@ -793,6 +793,9 @@ let searchQ = '';
 let iqQty = 1;
 let iqItem = null;
 let iqCatKey = '';
+
+// Atribui id único estável a cada item (cat.key + '#' + nome)
+MENU.forEach(cat=>cat.items.forEach(it=>{ it.id = cat.key + '#' + it.name; it._catKey = cat.key; it._catLabel = cat.label; }));
 const fmt = v => new Intl.NumberFormat('pt-AO').format(v) + ' Kz';
 const getPrice = item => item.price || 0;
 function priceHTML(item){ return item.price ? `<span class="card-price">${fmt(item.price)}</span>` : `<span class="card-price tbd">Sob consulta</span>`; }
@@ -865,7 +868,7 @@ function buildMenu(){
       </div>
       <div class="grid">
         ${items.map(item=>`
-        <article class="card" onclick="openItemByName('${item.name.replace(/'/g,"\\'")}','${cat.key}')">
+        <article class="card" onclick="openItemById('${item.id.replace(/'/g,"\\'")}')">
           ${item.img ? `<div class="card-img"><img src="${item.img}" alt="${item.name}" loading="lazy"></div>` : `<div class="card-img-placeholder"><span>魂</span></div>`}
           <div class="card-body">
             <div class="card-name">${item.name}</div>
@@ -897,16 +900,18 @@ function buildMenu(){
 // ══════════════════════════════════════
 // ITEM MODAL
 // ══════════════════════════════════════
-function openItemByName(name, catKey){
-  const cat = MENU.find(c=>c.key===catKey);
-  if(!cat) return;
-  const item = cat.items.find(i=>i.name===name);
-  if(!item) return;
-  openItem(item, cat.label, catKey);
+function openItemById(id){
+  let foundItem=null, foundCat=null;
+  for(const cat of MENU){
+    const it = cat.items.find(i=>i.id===id);
+    if(it){ foundItem=it; foundCat=cat; break; }
+  }
+  if(!foundItem) return;
+  openItem(foundItem, foundCat.label, foundCat.key);
 }
 
 function openItem(item, catLabel, catKey){
-  iqItem = item; iqQty = 1; iqCatKey = catKey || '';
+  iqItem = item; iqQty = 1; iqCatKey = catKey || (item._catKey||'');
   document.getElementById('itemCat').textContent = catLabel;
   document.getElementById('itemName').textContent = item.name;
   document.getElementById('itemDesc').textContent = item.desc || '';
@@ -927,7 +932,7 @@ document.getElementById('iqMinus').addEventListener('click',()=>{ if(iqQty>1){ i
 document.getElementById('iqPlus').addEventListener('click',()=>{ iqQty++; document.getElementById('iqNum').textContent=iqQty; });
 document.getElementById('itemAddBtn').addEventListener('click',()=>{
   if(!iqItem) return;
-  const idx = cart.findIndex(c=>c.item.name===iqItem.name && c.catKey===iqCatKey);
+  const idx = cart.findIndex(c=>c.item.id===iqItem.id);
   if(idx>=0) cart[idx].qty+=iqQty; else cart.push({item:iqItem, catKey:iqCatKey, qty:iqQty});
   updateCartUI();
   showToast(`${iqItem.name} adicionado`);
