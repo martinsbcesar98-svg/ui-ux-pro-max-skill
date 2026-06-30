@@ -30,8 +30,8 @@ body{font-family:'Inter',sans-serif;font-size:14px;color:var(--washi);display:fl
 
 /* HEADER */
 header{
-  display:flex;align-items:center;justify-content:space-between;
-  padding:0 28px;height:64px;
+  display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;
+  padding:8px 28px;min-height:64px;gap:10px 16px;
   background:var(--ink-2);border-bottom:1px solid var(--line);
   flex-shrink:0;position:relative;z-index:10;
 }
@@ -204,8 +204,12 @@ header::after{
 
 /* RESPONSIVE */
 @media(max-width:900px){.sidebar{display:none}}
+@media(max-width:860px){
+  .logo-sub{display:none}
+  header{padding:8px 20px}
+}
 @media(max-width:640px){
-  header{padding:0 16px;height:56px}
+  header{padding:8px 16px;gap:8px 10px}
   .hdr-stat{display:none}
   .tabs-wrap{padding:0 12px}
   #board{padding:12px;grid-template-columns:1fr}
