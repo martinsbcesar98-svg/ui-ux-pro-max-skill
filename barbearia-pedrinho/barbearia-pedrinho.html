@@ -1,0 +1,1469 @@
+<!DOCTYPE html>
+<html lang="pt">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+<title>Barbearia do Pedrinho — Sistema</title>
+<link rel="preconnect" href="https://fonts.googleapis.com"/>
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin/>
+<link href="https://fonts.googleapis.com/css2?family=Bodoni+Moda:ital,wght@0,400;0,600;0,700;1,400&family=Jost:wght@300;400;500;600;700&display=swap" rel="stylesheet"/>
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+<style>
+/* ══════════════════════ TOKENS ══════════════════════ */
+:root{
+  --black:#080806; --bg:#0E0D0B; --card:#161512; --card2:#1E1C18;
+  --border:#2C2A24; --border2:#3A3830; --text:#F0EBE0; --muted:#8A8070;
+  --gold:#C9A84C; --gold2:#A07A28; --gold-gl:rgba(201,168,76,.12); --gold-gl2:rgba(201,168,76,.06);
+  --green:#5DBF7A; --blue:#6BAED6; --red:#E06060;
+  --r:8px; --r2:14px; --r3:20px;
+  --serif:'Bodoni Moda',Georgia,serif; --sans:'Jost',system-ui,sans-serif;
+}
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+html{font-size:16px;-webkit-text-size-adjust:100%}
+body{font-family:var(--sans);background:var(--bg);color:var(--text);min-height:100dvh;
+  line-height:1.6;-webkit-tap-highlight-color:transparent}
+button{font-family:var(--sans);cursor:pointer;border:none;background:none;color:inherit}
+input,select{font-family:var(--sans);font-size:16px}
+svg{display:block;flex-shrink:0}
+.view{display:none}.view.active{display:block}
+.gold{color:var(--gold)}.green{color:var(--green)}.blue{color:var(--blue)}
+
+/* ══════════════════════ LOGO SVG ══════════════════════ */
+.logo-mark{display:flex;flex-direction:column;align-items:center;margin-bottom:28px}
+.logo-razors{width:78px;height:60px;margin-bottom:8px;filter:drop-shadow(0 2px 8px rgba(0,0,0,.5))}
+.logo-divider{display:flex;align-items:center;gap:8px;width:100%;justify-content:center;margin-bottom:3px}
+.logo-line{flex:1;height:1px;background:linear-gradient(90deg,transparent,var(--gold),transparent);max-width:56px}
+.logo-dot{width:6px;height:6px;border-radius:50%;background:var(--gold)}
+.logo-barbearia{font-family:var(--sans);font-size:.62rem;font-weight:600;letter-spacing:.36em;
+  color:var(--gold);text-transform:uppercase}
+.logo-pedrinho{font-family:var(--serif);font-size:1.95rem;font-weight:700;letter-spacing:.04em;
+  color:var(--text);line-height:1;text-align:center;margin-top:2px}
+.logo-tagline{font-family:var(--serif);font-style:italic;font-size:.74rem;color:var(--muted);
+  margin-top:7px;letter-spacing:.02em}
+
+/* ══════════════════════ LOGIN ══════════════════════ */
+.login-wrap{min-height:100dvh;display:flex;align-items:center;justify-content:center;padding:24px;
+  background:radial-gradient(ellipse 60% 40% at 50% 0%,rgba(201,168,76,.08) 0%,transparent 70%),var(--black)}
+.login-card{width:100%;max-width:420px;background:var(--card);border:1px solid var(--border);
+  border-radius:var(--r3);padding:44px 36px;
+  box-shadow:0 20px 60px rgba(0,0,0,.8),0 0 0 1px rgba(201,168,76,.05)}
+.login-title{font-size:.8rem;font-weight:500;color:var(--muted);text-align:center;margin-bottom:26px;
+  letter-spacing:.05em;text-transform:uppercase}
+.fg{display:flex;flex-direction:column;gap:7px;margin-bottom:16px}
+.fl{font-size:.72rem;font-weight:500;color:var(--muted);letter-spacing:.06em;text-transform:uppercase}
+.iw{position:relative;display:flex;align-items:center}
+.iw .ic{position:absolute;left:14px;width:16px;height:16px;color:var(--muted);pointer-events:none}
+.fi{width:100%;padding:13px 14px 13px 44px;background:var(--black);border:1px solid var(--border2);
+  border-radius:var(--r);color:var(--text);font-size:16px;transition:border-color .2s,box-shadow .2s;-webkit-appearance:none}
+.fi:focus{outline:none;border-color:var(--gold2);box-shadow:0 0 0 3px var(--gold-gl)}
+.fi::placeholder{color:var(--muted);opacity:.5}
+.gold-divider{display:flex;align-items:center;gap:10px;margin:6px 0 18px}
+.gold-divider-line{flex:1;height:1px;background:var(--border)}
+.gold-divider-text{font-size:.65rem;color:var(--muted);letter-spacing:.08em;text-transform:uppercase;white-space:nowrap}
+.btn-gold{display:flex;align-items:center;justify-content:center;gap:8px;width:100%;padding:14px;
+  background:var(--gold);color:var(--black);font-weight:600;font-size:.9rem;letter-spacing:.04em;
+  border-radius:var(--r);transition:all .2s;min-height:52px}
+.btn-gold:hover{background:#D9B85A;box-shadow:0 4px 20px rgba(201,168,76,.3)}
+.btn-gold:active{transform:scale(.98)}
+.btn-gold svg{width:17px;height:17px}
+.barbers-grid{display:grid;grid-template-columns:repeat(2,1fr);gap:8px;margin-top:4px}
+.barber-btn{padding:10px 12px;background:var(--card2);border:1px solid var(--border);border-radius:var(--r);
+  font-size:.82rem;color:var(--muted);text-align:left;transition:all .18s;display:flex;align-items:center;gap:8px;min-height:44px}
+.barber-btn svg{width:14px;height:14px;flex-shrink:0}
+.barber-btn:hover{border-color:var(--gold2);color:var(--gold);background:var(--gold-gl2)}
+.barber-btn:active{transform:scale(.97)}
+.barber-btn.owner{grid-column:span 2;border-color:var(--gold2);color:var(--gold);background:var(--gold-gl2);font-weight:600}
+.err{display:none;align-items:center;gap:8px;padding:11px 14px;border-radius:var(--r);
+  background:rgba(224,96,96,.08);border:1px solid rgba(224,96,96,.25);color:var(--red);font-size:.83rem;margin-bottom:4px}
+.err.show{display:flex}
+.err svg{width:15px;height:15px;flex-shrink:0}
+
+/* ══════════════════════ NAV ══════════════════════ */
+.navbar{display:flex;align-items:center;padding:0 20px;height:58px;background:var(--black);
+  border-bottom:1px solid var(--border);position:sticky;top:0;z-index:100;gap:2px}
+.nb-logo{display:flex;align-items:center;gap:10px;margin-right:auto}
+.nb-logo-icon{width:34px;height:28px}
+.nb-logo-text{display:flex;flex-direction:column;line-height:1}
+.nb-logo-top{font-size:.54rem;font-weight:500;letter-spacing:.22em;color:var(--gold);text-transform:uppercase}
+.nb-logo-main{font-family:var(--serif);font-size:1rem;font-weight:700;letter-spacing:.03em;color:var(--text)}
+.nb-tabs{display:flex;gap:2px}
+.nb-tab{display:flex;align-items:center;gap:6px;padding:8px 13px;border-radius:var(--r);font-size:.8rem;
+  font-weight:500;color:var(--muted);letter-spacing:.02em;transition:all .18s;min-height:42px;white-space:nowrap}
+.nb-tab svg{width:15px;height:15px}
+.nb-tab:hover{color:var(--text);background:var(--card)}
+.nb-tab.act{color:var(--gold);background:var(--gold-gl)}
+.nb-right{display:flex;align-items:center;gap:8px;margin-left:12px}
+.nb-user{display:flex;align-items:center;gap:6px;font-size:.72rem;font-weight:600;padding:5px 12px;
+  background:var(--gold-gl);border:1px solid rgba(201,168,76,.3);border-radius:20px;color:var(--gold);white-space:nowrap;letter-spacing:.04em}
+.nb-user .dot{width:6px;height:6px;border-radius:50%;background:var(--green)}
+.nb-user .dot.local{background:var(--muted)}
+.nb-out{display:flex;align-items:center;gap:5px;padding:8px 10px;border-radius:var(--r);font-size:.78rem;
+  color:var(--muted);transition:all .18s;min-height:40px}
+.nb-out svg{width:15px;height:15px}
+.nb-out:hover{color:var(--red);background:rgba(224,96,96,.08)}
+
+/* ══════════════════════ MAIN ══════════════════════ */
+.main{max-width:760px;margin:0 auto;padding:24px 18px 56px}
+.ph{margin-bottom:22px}
+.ph-eyebrow{font-size:.68rem;font-weight:500;letter-spacing:.15em;text-transform:uppercase;color:var(--gold);margin-bottom:6px}
+.ph-title{font-family:var(--serif);font-size:1.8rem;font-weight:700;letter-spacing:.01em;line-height:1.15}
+.ph-sub{color:var(--muted);font-size:.83rem;margin-top:5px;font-weight:300}
+.ph-row{display:flex;align-items:flex-start;justify-content:space-between;gap:12px;flex-wrap:wrap}
+
+/* ══════════════════════ BUTTONS ══════════════════════ */
+.btn-p{display:inline-flex;align-items:center;gap:7px;padding:11px 20px;background:var(--gold);color:var(--black);
+  font-weight:600;font-size:.82rem;letter-spacing:.03em;border-radius:var(--r);transition:all .18s;min-height:44px;white-space:nowrap}
+.btn-p:hover{background:#D9B85A;box-shadow:0 4px 16px rgba(201,168,76,.25)}
+.btn-p:active{transform:scale(.97)}
+.btn-p svg{width:15px;height:15px}
+.btn-o{display:inline-flex;align-items:center;gap:7px;padding:11px 20px;background:transparent;color:var(--muted);
+  font-size:.82rem;font-weight:500;border:1px solid var(--border2);border-radius:var(--r);transition:all .18s;min-height:44px;white-space:nowrap}
+.btn-o:hover{color:var(--text);border-color:var(--muted)}
+.btn-o svg{width:15px;height:15px}
+
+/* ══════════════════════ FILTER ══════════════════════ */
+.fbar{display:flex;gap:10px;margin-bottom:18px;flex-wrap:wrap;align-items:flex-end}
+.fg2{display:flex;flex-direction:column;gap:4px}
+.fl2{font-size:.65rem;font-weight:500;color:var(--muted);letter-spacing:.1em;text-transform:uppercase}
+.fsel{padding:9px 30px 9px 12px;background:var(--card);border:1px solid var(--border);border-radius:var(--r);
+  color:var(--text);font-size:.85rem;cursor:pointer;min-height:42px;-webkit-appearance:none;
+  background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 24 24' fill='none' stroke='%238A8070' stroke-width='2'%3E%3Cpath d='M6 9l6 6 6-6'/%3E%3C/svg%3E");
+  background-repeat:no-repeat;background-position:right 10px center;background-size:12px}
+.fsel:focus{outline:none;border-color:var(--gold2)}
+.fsearch{flex:1;min-width:140px}
+.fsearch .fsel{width:100%;padding-left:12px;background-image:none;cursor:text}
+
+/* ══════════════════════ STATS ══════════════════════ */
+.stats{display:grid;grid-template-columns:repeat(3,1fr);gap:12px;margin-bottom:24px}
+.stats.four{grid-template-columns:repeat(4,1fr)}
+.sc{padding:18px 16px;background:var(--card);border:1px solid var(--border);border-radius:var(--r2);
+  display:flex;flex-direction:column;gap:10px;transition:border-color .2s}
+.sc:hover{border-color:var(--border2)}
+.sc.hi{border-color:rgba(201,168,76,.25);background:linear-gradient(135deg,var(--card),rgba(201,168,76,.04))}
+.si{width:38px;height:38px;border-radius:9px;display:flex;align-items:center;justify-content:center}
+.si svg{width:18px;height:18px}
+.si-g{background:var(--gold-gl);color:var(--gold)}
+.si-gr{background:rgba(93,191,122,.1);color:var(--green)}
+.si-b{background:rgba(107,174,214,.1);color:var(--blue)}
+.sl{font-size:.65rem;font-weight:500;color:var(--muted);text-transform:uppercase;letter-spacing:.08em}
+.sv{font-family:var(--serif);font-size:1.3rem;font-weight:600;letter-spacing:-.01em;line-height:1;font-variant-numeric:tabular-nums}
+.sv small{font-family:var(--sans);font-size:.58em;font-weight:400}
+
+/* ══════════════════════ SECTION ══════════════════════ */
+.sect{margin-bottom:24px}
+.sh{display:flex;align-items:center;gap:10px;margin-bottom:14px}
+.sh-line{flex:1;height:1px;background:var(--border)}
+.st{font-family:var(--serif);font-size:1rem;font-weight:600;letter-spacing:.01em;white-space:nowrap}
+.badge{padding:2px 10px;background:var(--card2);border:1px solid var(--border);border-radius:20px;
+  font-size:.7rem;color:var(--muted);font-weight:500;letter-spacing:.03em}
+
+/* ══════════════════════ TABLE ══════════════════════ */
+.tw{background:var(--card);border:1px solid var(--border);border-radius:var(--r2);overflow:auto}
+.tw table{width:100%;border-collapse:collapse;font-size:.83rem}
+.tw thead{background:var(--card2)}
+.tw th{padding:11px 14px;text-align:left;font-size:.65rem;font-weight:600;color:var(--muted);
+  text-transform:uppercase;letter-spacing:.1em;border-bottom:1px solid var(--border);white-space:nowrap}
+.tw td{padding:13px 14px;border-bottom:1px solid rgba(44,42,36,.6);vertical-align:middle}
+.tw tbody tr:last-child td{border-bottom:none}
+.tw tbody tr:hover{background:rgba(255,255,255,.015)}
+.tw tfoot{background:var(--card2)}
+.tw tfoot td{padding:12px 14px;border-top:1px solid var(--gold2);font-size:.83rem}
+.tr{text-align:right}.tc{text-align:center}
+.dm{color:var(--muted);font-size:.78rem}
+.dc{color:var(--muted);font-variant-numeric:tabular-nums;font-size:.8rem}
+.num{font-variant-numeric:tabular-nums}
+
+/* ══════════════════════ EMPTY / LOADING ══════════════════════ */
+.empty{display:flex;flex-direction:column;align-items:center;gap:14px;padding:48px 24px;
+  background:var(--card);border:1px dashed var(--border);border-radius:var(--r2);text-align:center;color:var(--muted)}
+.empty svg{width:38px;height:38px;opacity:.25}
+.empty p{font-size:.88rem;font-weight:300}
+.loading{display:flex;align-items:center;justify-content:center;gap:10px;padding:40px;color:var(--muted);font-size:.85rem}
+.spin{width:18px;height:18px;border:2px solid var(--border2);border-top-color:var(--gold);border-radius:50%;animation:sp .7s linear infinite}
+@keyframes sp{to{transform:rotate(360deg)}}
+.skel{background:linear-gradient(90deg,var(--card) 25%,var(--card2) 50%,var(--card) 75%);
+  background-size:200% 100%;animation:shim 1.3s infinite;border-radius:var(--r2);height:80px;margin-bottom:12px}
+@keyframes shim{to{background-position:-200% 0}}
+
+/* ══════════════════════ POPULAR ══════════════════════ */
+.pop{display:flex;flex-wrap:wrap;gap:8px}
+.pop-c{display:flex;align-items:center;gap:8px;padding:8px 14px;background:var(--card);
+  border:1px solid var(--border);border-radius:20px;font-size:.8rem}
+.pop-n{font-weight:600;color:var(--gold)}
+
+/* ══════════════════════ FORM ══════════════════════ */
+.form-card{background:var(--card);border:1px solid var(--border);border-radius:var(--r2);padding:24px;margin-bottom:22px}
+.rf-g{display:flex;flex-direction:column;gap:7px;margin-bottom:18px}
+.rf-l{display:flex;align-items:center;gap:6px;font-size:.68rem;font-weight:600;color:var(--muted);text-transform:uppercase;letter-spacing:.1em}
+.rf-l svg{width:13px;height:13px}
+.req{color:var(--gold)}
+.rf-i{width:100%;padding:12px 14px;background:var(--black);border:1px solid var(--border2);border-radius:var(--r);
+  color:var(--text);font-size:16px;transition:border-color .2s,box-shadow .2s;-webkit-appearance:none;min-height:48px}
+.rf-i:focus{outline:none;border-color:var(--gold2);box-shadow:0 0 0 3px var(--gold-gl)}
+.rf-i::placeholder{color:var(--muted);opacity:.5}
+.rf-i.bad{border-color:var(--red);box-shadow:0 0 0 3px rgba(224,96,96,.12)}
+.suf-wrap{position:relative;display:flex;align-items:center}
+.suf-wrap .rf-i{padding-right:54px}
+.suf{position:absolute;right:14px;font-size:.75rem;color:var(--muted);font-weight:500;pointer-events:none;letter-spacing:.04em}
+.helper{font-size:.73rem;color:var(--gold);margin-top:3px;font-weight:400;min-height:1em}
+.form-row{display:grid;grid-template-columns:1fr 1fr;gap:16px}
+.cc-wrap{display:flex;flex-wrap:wrap;gap:7px;margin-top:9px}
+.cc{padding:8px 14px;background:var(--black);border:1px solid var(--border2);border-radius:20px;font-size:.8rem;
+  cursor:pointer;color:var(--muted);user-select:none;min-height:40px;display:flex;align-items:center;transition:all .16s}
+.cc:hover,.cc:active{border-color:var(--gold2);color:var(--gold);background:var(--gold-gl)}
+.cc.sel{border-color:var(--gold2);color:var(--gold);background:var(--gold-gl)}
+.cc-add{border-style:dashed;color:var(--gold2)}
+
+/* barba toggle */
+.barba-toggle{display:flex;align-items:center;gap:10px;padding:12px 14px;background:var(--black);
+  border:1px solid var(--border2);border-radius:var(--r);cursor:pointer;min-height:48px;transition:all .18s}
+.barba-toggle input{position:absolute;opacity:0;width:0;height:0}
+.barba-box{width:22px;height:22px;border-radius:6px;border:1.5px solid var(--border2);display:flex;
+  align-items:center;justify-content:center;flex-shrink:0;transition:all .18s;color:transparent}
+.barba-box svg{width:14px;height:14px}
+.barba-txt{font-size:.85rem;color:var(--muted);transition:color .18s}
+.barba-toggle:has(input:checked){border-color:var(--gold2);background:var(--gold-gl2)}
+.barba-toggle:has(input:checked) .barba-box{background:var(--gold);border-color:var(--gold);color:var(--black)}
+.barba-toggle:has(input:checked) .barba-txt{color:var(--gold);font-weight:500}
+
+.cprev{display:flex;gap:28px;padding:16px 18px;background:linear-gradient(135deg,rgba(201,168,76,.08),rgba(201,168,76,.04));
+  border:1px solid rgba(201,168,76,.2);border-radius:var(--r);margin-bottom:18px}
+.cr{display:flex;flex-direction:column;gap:3px}
+.cl{font-size:.65rem;color:var(--muted);text-transform:uppercase;letter-spacing:.08em;font-weight:500}
+.cv{font-family:var(--serif);font-size:1.1rem;font-weight:600}
+.fa{display:flex;gap:10px;justify-content:flex-end;margin-top:4px}
+
+.price-list{background:var(--card);border:1px solid var(--border);border-radius:var(--r2);overflow:hidden}
+.pl-item{display:flex;justify-content:space-between;align-items:center;padding:14px 18px;
+  border-bottom:1px solid rgba(44,42,36,.6);cursor:pointer;transition:background .15s;min-height:52px;gap:12px}
+.pl-item:last-child{border-bottom:none}
+.pl-item:hover{background:rgba(201,168,76,.04)}
+.pl-name{font-size:.85rem;font-weight:400;line-height:1.35;color:var(--text)}
+.pl-price{font-family:var(--serif);font-size:.9rem;font-weight:600;color:var(--gold);white-space:nowrap}
+
+.del{display:flex;align-items:center;justify-content:center;width:36px;height:36px;border-radius:7px;
+  color:var(--muted);transition:all .16s;min-height:36px}
+.del:hover,.del:active{background:rgba(224,96,96,.1);color:var(--red)}
+.del.edit:hover{background:var(--gold-gl);color:var(--gold)}
+.del svg{width:15px;height:15px}
+
+/* ══════════════════════ OWNER BAR CHART ══════════════════════ */
+.chart{background:var(--card);border:1px solid var(--border);border-radius:var(--r2);padding:20px 18px}
+.bar-row{display:flex;align-items:center;gap:12px;margin-bottom:14px}
+.bar-row:last-child{margin-bottom:0}
+.bar-name{width:88px;font-size:.8rem;font-weight:500;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;flex-shrink:0}
+.bar-track{flex:1;height:26px;background:var(--black);border-radius:6px;overflow:hidden;position:relative}
+.bar-fill{height:100%;background:linear-gradient(90deg,var(--gold2),var(--gold));border-radius:6px;
+  transition:width .6s cubic-bezier(.22,1,.36,1);min-width:2px}
+.bar-val{width:104px;text-align:right;font-family:var(--serif);font-size:.85rem;font-weight:600;color:var(--gold);flex-shrink:0;font-variant-numeric:tabular-nums}
+
+/* ══════════════════════ MODAL ══════════════════════ */
+.overlay{display:none;position:fixed;inset:0;background:rgba(0,0,0,.75);z-index:300;align-items:flex-end;justify-content:center;backdrop-filter:blur(2px)}
+.overlay.open{display:flex}
+.modal{background:var(--card);border:1px solid var(--border);border-radius:var(--r3) var(--r3) 0 0;width:100%;
+  max-width:520px;padding:28px 24px 36px;animation:su .25s ease}
+@keyframes su{from{transform:translateY(50px);opacity:0}to{transform:translateY(0);opacity:1}}
+.modal-title{font-family:var(--serif);font-size:1.1rem;font-weight:600;margin-bottom:18px}
+.modal-i{width:100%;padding:13px 14px;background:var(--black);border:1px solid var(--border2);border-radius:var(--r);
+  color:var(--text);font-size:16px;-webkit-appearance:none;transition:border-color .2s,box-shadow .2s}
+.modal-i:focus{outline:none;border-color:var(--gold2);box-shadow:0 0 0 3px var(--gold-gl)}
+.modal-i::placeholder{color:var(--muted);opacity:.5}
+.modal-i+.modal-i{margin-top:10px}
+.modal-fa{display:flex;gap:10px;margin-top:16px}
+.modal-fa>*{flex:1;justify-content:center}
+
+/* ══════════════════════ TOAST ══════════════════════ */
+.toast{position:fixed;bottom:22px;left:50%;transform:translateX(-50%) translateY(18px);opacity:0;display:flex;
+  align-items:center;gap:9px;padding:12px 20px;border-radius:30px;font-size:.85rem;font-weight:500;
+  box-shadow:0 8px 32px rgba(0,0,0,.6);z-index:400;transition:all .28s ease;white-space:nowrap;letter-spacing:.01em}
+.toast.show{opacity:1;transform:translateX(-50%) translateY(0)}
+.toast svg{width:16px;height:16px;flex-shrink:0}
+.toast.ok{background:rgba(93,191,122,.12);border:1px solid rgba(93,191,122,.3);color:var(--green)}
+.toast.er{background:rgba(224,96,96,.12);border:1px solid rgba(224,96,96,.3);color:var(--red)}
+.toast.info{background:rgba(107,174,214,.12);border:1px solid rgba(107,174,214,.3);color:var(--blue)}
+
+/* ══════════════════════ RESPONSIVE ══════════════════════ */
+@media(max-width:640px){
+  .nb-tab span{display:none}
+  .nb-tab{padding:8px 10px;min-width:42px;justify-content:center}
+  .nb-logo-text{display:none}
+  .nb-user span.uname{display:none}
+  .stats,.stats.four{grid-template-columns:repeat(3,1fr)}
+  .sv{font-size:1.02rem}
+  .form-row{grid-template-columns:1fr}
+  .fa{flex-direction:column-reverse}
+  .fa .btn-p,.fa .btn-o{width:100%;justify-content:center}
+  .login-card{padding:32px 22px}
+  .logo-pedrinho{font-size:1.6rem}
+  .main{padding:18px 14px 48px}
+  .bar-name{width:64px;font-size:.72rem}
+  .bar-val{width:82px;font-size:.76rem}
+}
+@media(max-width:480px){
+  /* tabelas mais compactas no telemóvel — o valor tem de caber sem cortar */
+  .tw th,.tw td{padding:10px 9px}
+  .tw table{font-size:.8rem}
+  .tw th{font-size:.6rem;letter-spacing:.06em}
+  .dc{font-size:.72rem}
+  .tw td .dm{font-size:.74rem}
+}
+@media(max-width:400px){
+  .stats,.stats.four{grid-template-columns:1fr 1fr}
+  .navbar{padding:0 12px;gap:0}
+  .nb-user{display:none}
+  .nb-out{padding:8px 8px}
+  .nb-out span,.nb-out{font-size:0}
+  .nb-out svg{width:17px;height:17px}
+  .nb-tab{padding:8px 7px;min-width:36px}
+  .main{padding:16px 12px 44px}
+  .tw th,.tw td{padding:9px 7px}
+  .tw table{font-size:.76rem}
+}
+
+/* ══════════════════════ DEMO ══════════════════════ */
+.btn-demo{display:flex;align-items:center;justify-content:center;gap:9px;width:100%;margin-top:22px;
+  padding:13px;background:transparent;color:var(--gold);font-weight:600;font-size:.85rem;letter-spacing:.03em;
+  border:1px solid var(--gold2);border-radius:var(--r);transition:all .2s;min-height:48px}
+.btn-demo:hover{background:var(--gold-gl);box-shadow:0 4px 18px rgba(201,168,76,.15)}
+.btn-demo:active{transform:scale(.98)}
+.btn-demo svg{width:15px;height:15px}
+.demo-on{position:fixed;inset:0;z-index:200;pointer-events:none}
+.demo-badge{position:fixed;top:14px;right:14px;z-index:500;display:none;align-items:center;gap:7px;
+  padding:7px 13px;background:rgba(224,96,96,.15);border:1px solid rgba(224,96,96,.4);border-radius:20px;
+  color:var(--red);font-size:.72rem;font-weight:600;letter-spacing:.05em;text-transform:uppercase;backdrop-filter:blur(6px)}
+.demo-badge.show{display:flex}
+.demo-badge .rec{width:9px;height:9px;border-radius:50%;background:var(--red);animation:blink 1s infinite}
+@keyframes blink{50%{opacity:.3}}
+.demo-badge button{color:var(--red);pointer-events:auto;padding:2px 6px;font-size:.7rem;text-decoration:underline}
+.demo-cap{position:fixed;left:50%;bottom:26px;transform:translateX(-50%) translateY(24px);z-index:500;
+  display:none;max-width:min(560px,92vw);padding:15px 22px;border-radius:16px;text-align:center;
+  background:linear-gradient(135deg,rgba(22,21,18,.97),rgba(30,28,24,.97));border:1px solid var(--gold2);
+  box-shadow:0 16px 48px rgba(0,0,0,.7),0 0 0 1px rgba(201,168,76,.1);opacity:0;transition:all .4s cubic-bezier(.22,1,.36,1);backdrop-filter:blur(8px)}
+.demo-cap.show{display:block;opacity:1;transform:translateX(-50%) translateY(0)}
+.demo-cap-eyebrow{font-size:.62rem;font-weight:600;letter-spacing:.18em;text-transform:uppercase;color:var(--gold);margin-bottom:6px}
+.demo-cap-text{font-size:.98rem;line-height:1.5;color:var(--text);font-weight:400}
+.demo-cap-text strong{color:var(--gold);font-weight:600}
+.demo-cap-bar{height:3px;background:var(--border);border-radius:3px;margin-top:12px;overflow:hidden}
+.demo-cap-fill{height:100%;background:linear-gradient(90deg,var(--gold2),var(--gold));width:0;border-radius:3px}
+.demo-intro{position:fixed;inset:0;z-index:490;display:none;flex-direction:column;align-items:center;justify-content:center;
+  gap:6px;background:radial-gradient(ellipse 70% 50% at 50% 40%,rgba(201,168,76,.1),transparent 70%),var(--black);opacity:0;transition:opacity .6s}
+.demo-intro.show{display:flex;opacity:1}
+.demo-focus{position:relative;z-index:210;box-shadow:0 0 0 3px var(--gold),0 0 0 9px rgba(201,168,76,.2),0 10px 40px rgba(0,0,0,.5)!important;
+  border-radius:var(--r)!important;transition:box-shadow .3s}
+
+/* ══════════════════════ PRINT ══════════════════════ */
+#print-area{display:none}
+@media print{
+  body{background:#fff;color:#111}
+  .navbar,.fbar,.fa,.btn-p,.btn-o,.del,.nb-out,#toast,#overlay{display:none!important}
+  .view,.main{display:block!important;max-width:100%;padding:0}
+  #v-app>*:not(#print-mount){display:none}
+  #print-area{display:block!important}
+  .p-head{text-align:center;border-bottom:2px solid #111;padding-bottom:14px;margin-bottom:18px}
+  .p-brand{font-family:var(--serif);font-size:1.6rem;font-weight:700;letter-spacing:.05em}
+  .p-sub{font-size:.85rem;color:#555;margin-top:4px}
+  .p-meta{display:flex;justify-content:space-between;margin:14px 0;font-size:.85rem}
+  .p-table{width:100%;border-collapse:collapse;font-size:.8rem;margin-top:10px}
+  .p-table th{text-align:left;border-bottom:1.5px solid #111;padding:7px 8px;font-size:.7rem;text-transform:uppercase;letter-spacing:.06em}
+  .p-table td{padding:7px 8px;border-bottom:1px solid #ddd}
+  .p-table tfoot td{border-top:2px solid #111;font-weight:700}
+  .p-tr{text-align:right}
+  .p-foot{margin-top:26px;text-align:center;font-size:.72rem;color:#888;font-style:italic}
+}
+</style>
+</head>
+<body>
+
+<!-- ═══════════════ LOGIN ═══════════════ -->
+<div id="v-login" class="view active">
+<div class="login-wrap">
+<div class="login-card">
+
+  <div class="logo-mark">
+    <svg class="logo-razors" viewBox="0 0 80 64" fill="none" xmlns="http://www.w3.org/2000/svg">
+      <g transform="translate(40,32) rotate(-38)">
+        <rect x="-29" y="-4.5" width="25" height="9" rx="3.5" fill="#171510" stroke="#3A3020" stroke-width="1"/>
+        <line x1="-25" y1="0" x2="-8" y2="0" stroke="#7A6224" stroke-width=".8" opacity=".7"/>
+        <circle cx="-3" cy="0" r="2.6" fill="#C9A84C"/><circle cx="-3" cy="0" r="1" fill="#5A4515"/>
+        <polygon points="1,-3.2 27,-1 33,0 27,1 1,3.2" fill="#EDE7D6"/>
+        <polygon points="1,-3.2 27,-1 33,0 27,-.3 3,-1.6" fill="#FFFDF6" opacity=".75"/>
+        <line x1="4" y1="0" x2="26" y2="0" stroke="#B8AE95" stroke-width=".5" opacity=".6"/>
+      </g>
+      <g transform="translate(40,32) rotate(38) scale(-1,1)">
+        <rect x="-29" y="-4.5" width="25" height="9" rx="3.5" fill="#171510" stroke="#3A3020" stroke-width="1"/>
+        <line x1="-25" y1="0" x2="-8" y2="0" stroke="#7A6224" stroke-width=".8" opacity=".7"/>
+        <circle cx="-3" cy="0" r="2.6" fill="#C9A84C"/><circle cx="-3" cy="0" r="1" fill="#5A4515"/>
+        <polygon points="1,-3.2 27,-1 33,0 27,1 1,3.2" fill="#EDE7D6"/>
+        <polygon points="1,-3.2 27,-1 33,0 27,-.3 3,-1.6" fill="#FFFDF6" opacity=".75"/>
+        <line x1="4" y1="0" x2="26" y2="0" stroke="#B8AE95" stroke-width=".5" opacity=".6"/>
+      </g>
+    </svg>
+    <div class="logo-divider">
+      <div class="logo-line"></div><div class="logo-dot"></div>
+      <span class="logo-barbearia">Barbearia</span>
+      <div class="logo-dot"></div><div class="logo-line"></div>
+    </div>
+    <div class="logo-pedrinho">DO PEDRINHO</div>
+    <div class="logo-tagline">Um Cavalheiro, Uma Experiência Única</div>
+  </div>
+
+  <p class="login-title">Acesso ao Sistema</p>
+
+  <div id="l-err" class="err">
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="9"/><path d="M12 8v4M12 16h.01"/></svg>
+    <span>Utilizador ou senha incorretos.</span>
+  </div>
+
+  <div class="fg">
+    <label class="fl">Utilizador</label>
+    <div class="iw">
+      <svg class="ic" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M20 21v-2a4 4 0 00-4-4H8a4 4 0 00-4 4v2M12 11a4 4 0 100-8 4 4 0 000 8z"/></svg>
+      <input id="l-user" type="text" class="fi" placeholder="nome de utilizador" autocomplete="username"/>
+    </div>
+  </div>
+  <div class="fg">
+    <label class="fl">Senha</label>
+    <div class="iw">
+      <svg class="ic" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><rect x="3" y="11" width="18" height="11" rx="2"/><path d="M7 11V7a5 5 0 0110 0v4"/></svg>
+      <input id="l-pass" type="password" class="fi" placeholder="••••••••" autocomplete="current-password"/>
+    </div>
+  </div>
+
+  <button class="btn-gold" onclick="doLogin()" style="margin-bottom:24px">
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M15 3h4a2 2 0 012 2v14a2 2 0 01-2 2h-4M10 17l5-5-5-5M13 12H3"/></svg>
+    Entrar
+  </button>
+
+  <div class="gold-divider">
+    <div class="gold-divider-line"></div>
+    <span class="gold-divider-text">Acesso rápido</span>
+    <div class="gold-divider-line"></div>
+  </div>
+
+  <div class="barbers-grid">
+    <button class="barber-btn" onclick="fillLogin('arthur','arthur123')"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><circle cx="12" cy="8" r="4"/><path d="M4 20c0-4 3.6-7 8-7s8 3 8 7"/></svg>Arthur Tungo</button>
+    <button class="barber-btn" onclick="fillLogin('klein','klein123')"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><circle cx="12" cy="8" r="4"/><path d="M4 20c0-4 3.6-7 8-7s8 3 8 7"/></svg>Klein</button>
+    <button class="barber-btn" onclick="fillLogin('vemba','vemba123')"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><circle cx="12" cy="8" r="4"/><path d="M4 20c0-4 3.6-7 8-7s8 3 8 7"/></svg>Vemba</button>
+    <button class="barber-btn" onclick="fillLogin('bernardo','bernardo123')"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><circle cx="12" cy="8" r="4"/><path d="M4 20c0-4 3.6-7 8-7s8 3 8 7"/></svg>Bernardo</button>
+    <button class="barber-btn" onclick="fillLogin('baldie','baldie123')"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><circle cx="12" cy="8" r="4"/><path d="M4 20c0-4 3.6-7 8-7s8 3 8 7"/></svg>Baldie</button>
+    <button class="barber-btn owner" onclick="fillLogin('pedrinho','pedrinho123')"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M3 11l9-8 9 8M5 10v10a1 1 0 001 1h12a1 1 0 001-1V10"/><path d="M12 3v6l3 2"/></svg>Dono</button>
+  </div>
+
+  <button class="btn-demo" onclick="startDemo()">
+    <svg viewBox="0 0 24 24" fill="currentColor"><path d="M8 5v14l11-7z"/></svg>
+    Ver Demonstração Automática
+  </button>
+  <p style="font-size:.68rem;color:var(--muted);text-align:center;margin-top:8px;letter-spacing:.02em">Ideal para gravar o ecrã e enviar ao dono</p>
+
+</div>
+</div>
+</div>
+
+<!-- ═══════════════ APP ═══════════════ -->
+<div id="v-app" class="view">
+
+  <nav class="navbar">
+    <div class="nb-logo">
+      <svg class="nb-logo-icon" viewBox="0 0 48 38" fill="none">
+        <g transform="translate(24,19) rotate(-38)">
+          <rect x="-17" y="-2.6" width="15" height="5.2" rx="2" fill="#171510" stroke="#3A3020" stroke-width=".6"/>
+          <circle cx="-2" cy="0" r="1.5" fill="#C9A84C"/>
+          <polygon points="0,-1.9 16,-.6 19.5,0 16,.6 0,1.9" fill="#EDE7D6"/>
+        </g>
+        <g transform="translate(24,19) rotate(38) scale(-1,1)">
+          <rect x="-17" y="-2.6" width="15" height="5.2" rx="2" fill="#171510" stroke="#3A3020" stroke-width=".6"/>
+          <circle cx="-2" cy="0" r="1.5" fill="#C9A84C"/>
+          <polygon points="0,-1.9 16,-.6 19.5,0 16,.6 0,1.9" fill="#EDE7D6"/>
+        </g>
+      </svg>
+      <div class="nb-logo-text">
+        <span class="nb-logo-top">Barbearia</span>
+        <span class="nb-logo-main">Do Pedrinho</span>
+      </div>
+    </div>
+
+    <div class="nb-tabs" id="nb-tabs"></div>
+
+    <div class="nb-right">
+      <span class="nb-user" id="nb-user"><span class="dot" id="nb-dot"></span><span class="uname" id="nb-name">—</span></span>
+      <button class="nb-out" onclick="doLogout()">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M17 16l4-4m0 0l-4-4m4 4H7m6 4v1a2 2 0 01-2 2H5a2 2 0 01-2-2V7a2 2 0 012-2h6a2 2 0 012 2v1"/></svg>
+        Sair
+      </button>
+    </div>
+  </nav>
+
+  <div class="main">
+
+    <!-- ─── DASHBOARD (barbeiro) ─── -->
+    <div id="pane-dash" style="display:none">
+      <div class="ph-row" style="margin-bottom:22px">
+        <div class="ph">
+          <div class="ph-eyebrow">Gestão Financeira</div>
+          <h1 class="ph-title">Olá, <span class="gold" id="d-nome">—</span></h1>
+          <p class="ph-sub" id="d-sub">—</p>
+        </div>
+        <button class="btn-p" onclick="showTab('reg')"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="9"/><path d="M12 8v8M8 12h8"/></svg>Registar Corte</button>
+      </div>
+      <div class="fbar">
+        <div class="fg2"><span class="fl2">Mês</span><select class="fsel" id="d-mes" onchange="renderDash()"></select></div>
+        <div class="fg2"><span class="fl2">Ano</span><select class="fsel" id="d-ano" onchange="renderDash()"></select></div>
+      </div>
+      <div class="stats">
+        <div class="sc"><div class="si si-b"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M17 21v-2a4 4 0 00-4-4H5a4 4 0 00-4 4v2M9 11a4 4 0 100-8 4 4 0 000 8zM23 21v-2a4 4 0 00-3-3.87M16 3.13a4 4 0 010 7.75"/></svg></div><div><div class="sl">Cortes</div><div class="sv" id="d-tot">—</div></div></div>
+        <div class="sc"><div class="si si-g"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M12 1v22M17 5H9.5a3.5 3.5 0 000 7h5a3.5 3.5 0 010 7H6"/></svg></div><div><div class="sl">Total Bruto</div><div class="sv gold" id="d-bruto">—</div></div></div>
+        <div class="sc hi"><div class="si si-gr"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M9 14l6-6M9 8h6M9 16h4M5 20h14a2 2 0 002-2V6l-5-5H5a2 2 0 00-2 2v14a2 2 0 002 2z"/></svg></div><div><div class="sl">Comissão 20%</div><div class="sv green" id="d-com">—</div></div></div>
+      </div>
+      <div class="sect">
+        <div class="sh"><h2 class="st">Cortes de Hoje</h2><div class="sh-line"></div><span class="badge" id="d-h-cnt">0</span></div>
+        <div id="d-hoje"></div>
+      </div>
+      <div class="sect" id="d-pop-s" style="display:none">
+        <div class="sh"><h2 class="st">Serviços Mais Pedidos</h2><div class="sh-line"></div></div>
+        <div class="pop" id="d-pop"></div>
+      </div>
+    </div>
+
+    <!-- ─── REGISTAR ─── -->
+    <div id="pane-reg" style="display:none">
+      <div class="ph" style="margin-bottom:22px">
+        <div class="ph-eyebrow">Novo Atendimento</div>
+        <h1 class="ph-title">Registar <span class="gold">Corte</span></h1>
+        <p class="ph-sub" id="r-sub">—</p>
+      </div>
+      <div class="form-card">
+        <div class="rf-g">
+          <label class="rf-l"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M20 21v-2a4 4 0 00-4-4H8a4 4 0 00-4 4v2M12 11a4 4 0 100-8 4 4 0 000 8z"/></svg>Cliente <span class="req">*</span></label>
+          <input id="r-cliente" type="text" class="rf-i" placeholder="Nome do cliente..." autocomplete="off" oninput="filterClients()"/>
+          <div class="cc-wrap" id="r-chips"></div>
+        </div>
+        <div class="form-row">
+          <div class="rf-g">
+            <label class="rf-l"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><rect x="3" y="4" width="18" height="18" rx="2"/><path d="M16 2v4M8 2v4M3 10h18"/></svg>Data <span class="req">*</span></label>
+            <input id="r-data" type="date" class="rf-i"/>
+          </div>
+          <div class="rf-g">
+            <label class="rf-l"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M14.5 10c-.83 0-1.5-.67-1.5-1.5v-5c0-.83.67-1.5 1.5-1.5s1.5.67 1.5 1.5v5c0 .83-.67 1.5-1.5 1.5zm-5 5c-.83 0-1.5-.67-1.5-1.5v-5c0-.83.67-1.5 1.5-1.5s1.5.67 1.5 1.5v5c0 .83-.67 1.5-1.5 1.5z"/></svg>Serviço <span class="req">*</span></label>
+            <select id="r-serv" class="rf-i" onchange="onServChange()"><option value="">— Selecionar serviço —</option></select>
+          </div>
+        </div>
+        <div class="rf-g">
+          <label class="rf-l gold" style="cursor:pointer"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M12 21c-3.5-2-6-5-6-9V6l6-3 6 3v6c0 4-2.5 7-6 9z"/></svg>Adicionar Barba</label>
+          <label class="barba-toggle" id="r-barba-toggle">
+            <input type="checkbox" id="r-barba" onchange="toggleBarba()"/>
+            <span class="barba-box"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3"><path d="M5 13l4 4L19 7"/></svg></span>
+            <span class="barba-txt">Incluir <strong>Barba e Bigode</strong> ao corte &nbsp;·&nbsp; +<span id="r-barba-preco">3.000</span> KZS</span>
+          </label>
+        </div>
+        <div class="form-row">
+          <div class="rf-g">
+            <label class="rf-l"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M12 1v22M17 5H9.5a3.5 3.5 0 000 7h5a3.5 3.5 0 010 7H6"/></svg>Valor (KZS) <span class="req">*</span></label>
+            <div class="suf-wrap"><input id="r-valor" type="number" class="rf-i" placeholder="0" step="50" min="0" inputmode="numeric" oninput="onValorChange()"/><span class="suf">KZS</span></div>
+            <p class="helper" id="r-helper"></p>
+          </div>
+          <div class="rf-g">
+            <label class="rf-l"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5"/></svg>Observação <span style="font-weight:400;text-transform:none;letter-spacing:0;color:var(--muted);font-size:.72rem">(opcional)</span></label>
+            <input id="r-obs" type="text" class="rf-i" placeholder="Desconto, observação..." maxlength="150"/>
+          </div>
+        </div>
+        <div class="cprev" id="r-prev" style="display:none">
+          <div class="cr"><span class="cl">Valor do serviço</span><span class="cv" id="r-pv">—</span></div>
+          <div class="cr"><span class="cl">A sua comissão (20%)</span><span class="cv gold" id="r-pc">—</span></div>
+        </div>
+        <div class="fa">
+          <button class="btn-o" id="r-cancel" onclick="cancelEdit()">Cancelar</button>
+          <button class="btn-p" id="r-submit" onclick="doRegistar()"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M5 13l4 4L19 7"/></svg>Registar Corte</button>
+        </div>
+      </div>
+      <div class="sect">
+        <div class="sh"><h2 class="st">Tabela de <span class="gold">Preços</span></h2><div class="sh-line"></div></div>
+        <div class="price-list" id="r-plist"></div>
+        <p style="font-size:.7rem;color:var(--muted);margin-top:9px;text-align:right;letter-spacing:.02em">Toque numa linha para selecionar automaticamente</p>
+      </div>
+    </div>
+
+    <!-- ─── HISTÓRICO ─── -->
+    <div id="pane-hist" style="display:none">
+      <div class="ph-row" style="margin-bottom:22px">
+        <div class="ph">
+          <div class="ph-eyebrow">Registos</div>
+          <h1 class="ph-title">Histórico de <span class="gold">Cortes</span></h1>
+          <p class="ph-sub" id="h-sub">—</p>
+        </div>
+        <div style="display:flex;gap:8px;flex-wrap:wrap">
+          <button class="btn-o" onclick="shareWhatsApp('hist')"><svg viewBox="0 0 24 24" fill="currentColor"><path d="M12 2a10 10 0 00-8.5 15.3L2 22l4.8-1.5A10 10 0 1012 2zm0 18a8 8 0 01-4.1-1.1l-.3-.2-2.8.9.9-2.8-.2-.3A8 8 0 1112 20zm4.4-6c-.2-.1-1.4-.7-1.6-.8s-.4-.1-.5.1-.6.8-.8 1-.3.2-.5.1a6.6 6.6 0 01-3.2-2.8c-.2-.4.2-.4.6-1.2a.4.4 0 000-.4l-.7-1.6c-.2-.5-.4-.4-.5-.4h-.5a.9.9 0 00-.7.3A2.8 2.8 0 006 9.9c0 1.6 1.2 3.2 1.4 3.4a10.6 10.6 0 004 3.5c1.4.6 1.9.6 2.6.5a2.3 2.3 0 001.5-1c.2-.5.2-1 .1-1-.1-.2-.3-.2-.5-.3z"/></svg>WhatsApp</button>
+          <button class="btn-o" onclick="printReport('hist')"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M6 9V2h12v7M6 18H4a2 2 0 01-2-2v-5a2 2 0 012-2h16a2 2 0 012 2v5a2 2 0 01-2 2h-2M6 14h12v8H6z"/></svg>PDF</button>
+          <button class="btn-p" onclick="showTab('reg')"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="9"/><path d="M12 8v8M8 12h8"/></svg>Novo</button>
+        </div>
+      </div>
+      <div class="fbar">
+        <div class="fg2"><span class="fl2">Mês</span><select class="fsel" id="h-mes" onchange="renderHist()"></select></div>
+        <div class="fg2"><span class="fl2">Ano</span><select class="fsel" id="h-ano" onchange="renderHist()"></select></div>
+        <div class="fg2 fsearch"><span class="fl2">Pesquisar</span><input type="text" class="fsel" id="h-search" placeholder="Cliente ou serviço..." oninput="renderHist()"/></div>
+      </div>
+      <div class="stats" style="margin-bottom:20px">
+        <div class="sc"><div class="si si-b"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2"/></svg></div><div><div class="sl">Cortes</div><div class="sv" id="h-tot">—</div></div></div>
+        <div class="sc"><div class="si si-g"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M12 1v22M17 5H9.5a3.5 3.5 0 000 7h5a3.5 3.5 0 010 7H6"/></svg></div><div><div class="sl">Total Bruto</div><div class="sv gold" id="h-br">—</div></div></div>
+        <div class="sc hi"><div class="si si-gr"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M9 14l6-6M9 8h6M9 16h4"/></svg></div><div><div class="sl">Comissão 20%</div><div class="sv green" id="h-co">—</div></div></div>
+      </div>
+      <div class="sect">
+        <div class="sh"><h2 class="st">Todos os Registos</h2><div class="sh-line"></div><span class="badge" id="h-cnt">0</span></div>
+        <div id="h-body"></div>
+      </div>
+    </div>
+
+    <!-- ─── CLIENTES ─── -->
+    <div id="pane-cli" style="display:none">
+      <div class="ph-row" style="margin-bottom:22px">
+        <div class="ph">
+          <div class="ph-eyebrow">Base de Dados</div>
+          <h1 class="ph-title">Os Meus <span class="gold">Clientes</span></h1>
+          <p class="ph-sub" id="c-sub">—</p>
+        </div>
+        <button class="btn-p" onclick="openModal()"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="9"/><path d="M12 8v8M8 12h8"/></svg>Novo Cliente</button>
+      </div>
+      <div class="fbar">
+        <div class="fg2 fsearch"><span class="fl2">Pesquisar cliente</span><input type="text" class="fsel" id="c-search" placeholder="Nome, telefone..." oninput="renderClientes()"/></div>
+      </div>
+      <div class="sect">
+        <div class="sh"><h2 class="st">Clientes Registados</h2><div class="sh-line"></div><span class="badge" id="c-cnt">0</span></div>
+        <div id="c-body"></div>
+      </div>
+    </div>
+
+    <!-- ─── PAINEL DO DONO ─── -->
+    <div id="pane-owner" style="display:none">
+      <div class="ph-row" style="margin-bottom:22px">
+        <div class="ph">
+          <div class="ph-eyebrow">Painel de Gestão</div>
+          <h1 class="ph-title">Visão Geral da <span class="gold">Barbearia</span></h1>
+          <p class="ph-sub" id="o-sub">—</p>
+        </div>
+        <div style="display:flex;gap:8px;flex-wrap:wrap">
+          <button class="btn-o" onclick="shareWhatsApp('owner')"><svg viewBox="0 0 24 24" fill="currentColor"><path d="M12 2a10 10 0 00-8.5 15.3L2 22l4.8-1.5A10 10 0 1012 2zm0 18a8 8 0 01-4.1-1.1l-.3-.2-2.8.9.9-2.8-.2-.3A8 8 0 1112 20z"/></svg>WhatsApp</button>
+          <button class="btn-o" onclick="printReport('owner')"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M6 9V2h12v7M6 18H4a2 2 0 01-2-2v-5a2 2 0 012-2h16a2 2 0 012 2v5a2 2 0 01-2 2h-2M6 14h12v8H6z"/></svg>PDF</button>
+        </div>
+      </div>
+      <div class="fbar">
+        <div class="fg2"><span class="fl2">Mês</span><select class="fsel" id="o-mes" onchange="renderOwner()"></select></div>
+        <div class="fg2"><span class="fl2">Ano</span><select class="fsel" id="o-ano" onchange="renderOwner()"></select></div>
+      </div>
+      <div class="stats four">
+        <div class="sc"><div class="si si-b"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M17 21v-2a4 4 0 00-4-4H5a4 4 0 00-4 4v2M9 11a4 4 0 100-8 4 4 0 000 8z"/></svg></div><div><div class="sl">Cortes</div><div class="sv" id="o-tot">—</div></div></div>
+        <div class="sc hi"><div class="si si-g"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M12 1v22M17 5H9.5a3.5 3.5 0 000 7h5a3.5 3.5 0 010 7H6"/></svg></div><div><div class="sl">Faturação</div><div class="sv gold" id="o-bruto">—</div></div></div>
+        <div class="sc"><div class="si si-gr"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M9 14l6-6M9 8h6M9 16h4"/></svg></div><div><div class="sl">Comissões</div><div class="sv green" id="o-com">—</div></div></div>
+        <div class="sc"><div class="si si-b"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M3 3v18h18M18 9l-5 5-3-3-4 4"/></svg></div><div><div class="sl">Casa (80%)</div><div class="sv blue" id="o-casa">—</div></div></div>
+      </div>
+      <div class="sect">
+        <div class="sh"><h2 class="st">Faturação por <span class="gold">Barbeiro</span></h2><div class="sh-line"></div></div>
+        <div class="chart" id="o-chart"></div>
+      </div>
+      <div class="sect">
+        <div class="sh"><h2 class="st">Detalhe por Barbeiro</h2><div class="sh-line"></div></div>
+        <div id="o-table"></div>
+      </div>
+    </div>
+
+    <div id="print-mount"></div>
+  </div>
+</div>
+
+<!-- print area -->
+<div id="print-area"></div>
+
+<!-- Modal cliente -->
+<div class="overlay" id="overlay" onclick="closeModal(event)">
+  <div class="modal">
+    <h3 class="modal-title" id="modal-title">Adicionar Cliente Habitual</h3>
+    <input id="modal-nome" type="text" class="modal-i" placeholder="Nome completo..." maxlength="50"/>
+    <input id="modal-tel" type="tel" class="modal-i" placeholder="Telefone (opcional)" maxlength="20"/>
+    <input id="modal-pref" type="text" class="modal-i" placeholder="Preferência de corte (opcional)" maxlength="60"/>
+    <div class="modal-fa">
+      <button class="btn-o" onclick="closeModal()">Cancelar</button>
+      <button class="btn-p" onclick="saveClient()"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M5 13l4 4L19 7"/></svg>Guardar</button>
+    </div>
+  </div>
+</div>
+
+<!-- Demonstração automática -->
+<div class="demo-intro" id="demo-intro">
+  <svg width="90" height="70" viewBox="0 0 80 64" fill="none">
+    <g transform="translate(40,32) rotate(-38)"><rect x="-29" y="-4.5" width="25" height="9" rx="3.5" fill="#171510" stroke="#3A3020" stroke-width="1"/><circle cx="-3" cy="0" r="2.6" fill="#C9A84C"/><polygon points="1,-3.2 27,-1 33,0 27,1 1,3.2" fill="#EDE7D6"/></g>
+    <g transform="translate(40,32) rotate(38) scale(-1,1)"><rect x="-29" y="-4.5" width="25" height="9" rx="3.5" fill="#171510" stroke="#3A3020" stroke-width="1"/><circle cx="-3" cy="0" r="2.6" fill="#C9A84C"/><polygon points="1,-3.2 27,-1 33,0 27,1 1,3.2" fill="#EDE7D6"/></g>
+  </svg>
+  <div style="font-family:var(--serif);font-size:1.7rem;font-weight:700;letter-spacing:.04em;margin-top:12px">DO PEDRINHO</div>
+  <div style="font-family:var(--serif);font-style:italic;font-size:.85rem;color:var(--muted);margin-top:4px">Sistema de Gestão · Demonstração</div>
+</div>
+<div class="demo-badge" id="demo-badge"><span class="rec"></span>Demo<button onclick="stopDemo()">parar ✕</button></div>
+<div class="demo-cap" id="demo-cap">
+  <div class="demo-cap-eyebrow" id="demo-cap-eyebrow">Demonstração</div>
+  <div class="demo-cap-text" id="demo-cap-text"></div>
+  <div class="demo-cap-bar"><div class="demo-cap-fill" id="demo-cap-fill"></div></div>
+</div>
+
+<div class="toast" id="toast"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"/></svg><span id="toast-msg"></span></div>
+
+<script>
+/* ═══════════════════════════════════════════════════════════════
+   CONFIGURAÇÃO SUPABASE  (nuvem opcional)
+   Cola aqui o URL e a chave anon do teu projeto Supabase.
+   Se ficarem vazios, o sistema funciona 100% localmente (localStorage).
+   ═══════════════════════════════════════════════════════════════ */
+const CONFIG = {
+  SUPABASE_URL:      '',   // ex: https://xxxx.supabase.co
+  SUPABASE_ANON_KEY: ''    // ex: eyJhbGci...
+};
+
+/* ─── UTILIZADORES ─── */
+const USERS = {
+  arthur:  {nome:'Arthur Tungo', senha:'arthur123',   role:'barber'},
+  klein:   {nome:'Klein',        senha:'klein123',    role:'barber'},
+  vemba:   {nome:'Vemba',        senha:'vemba123',    role:'barber'},
+  bernardo:{nome:'Bernardo',     senha:'bernardo123', role:'barber'},
+  baldie:  {nome:'Baldie',       senha:'baldie123',   role:'barber'},
+  pedrinho:{nome:'Dono',         senha:'pedrinho123', role:'owner'},
+};
+const BARBER_KEYS = Object.keys(USERS).filter(k=>USERS[k].role==='barber');
+
+const SERVICOS=[
+  {key:'corte_pedrinho',   nome:'Corte Pedrinho (Cabelo, Barba e Limpeza Facial)', preco:11000},
+  {key:'corte_frances_2t', nome:'Corte Francês (2 Tempos)',                        preco:6000},
+  {key:'corte_frances_jr', nome:'Corte Francês (Júnior)',                          preco:5000},
+  {key:'corte_escov_ad',   nome:'Corte Escovinha (Adulto)',                        preco:5500},
+  {key:'corte_escov_jr',   nome:'Corte Escovinha (Júnior)',                        preco:5000},
+  {key:'pintura_curto',    nome:'Pintura de Cabelo Curto',                         preco:6000},
+  {key:'pintura_medio',    nome:'Pintura de Cabelo Médio',                         preco:17000},
+  {key:'desfriso_curto',   nome:'Desfriso de Cabelo Curto',                        preco:6000},
+  {key:'limpeza_facial',   nome:'Limpeza Facial',                                  preco:6750},
+  {key:'laminagem',        nome:'Laminagem',                                       preco:3000},
+  {key:'barba_bigode',     nome:'Barba e Bigode',                                  preco:3000},
+  {key:'barba_depilador',  nome:'Barba com Depilador',                             preco:7750},
+  {key:'corte_depilador',  nome:'Corte de Cabelo c/ Depilador',                    preco:11000},
+  {key:'desenho',          nome:'Desenho',                                         preco:3000},
+  {key:'grafite',          nome:'Grafite',                                         preco:5300},
+];
+const MESES=['Janeiro','Fevereiro','Março','Abril','Maio','Junho','Julho','Agosto','Setembro','Outubro','Novembro','Dezembro'];
+const COM=0.20, BARBA_PRECO=3000;
+let CU=null, editingClient=null, editingCorte=null, baseServPrice=null;
+
+/* ═══════════════════════════════════════════════════════════════
+   CAMADA DE DADOS  (Supabase  ↔  fallback localStorage)
+   Interface única e assíncrona: o resto do código não sabe qual é.
+   ═══════════════════════════════════════════════════════════════ */
+let sb=null;
+function initDB(){
+  try{
+    if(CONFIG.SUPABASE_URL && CONFIG.SUPABASE_ANON_KEY && window.supabase){
+      sb=window.supabase.createClient(CONFIG.SUPABASE_URL,CONFIG.SUPABASE_ANON_KEY);
+    }
+  }catch(e){ sb=null; }
+}
+const cloud=()=>!!sb;
+
+/* localStorage helpers (chaves por barbeiro) */
+function _lsCortes(u){return JSON.parse(localStorage.getItem('cortes_'+u)||'[]')}
+function _lsSetCortes(u,a){localStorage.setItem('cortes_'+u,JSON.stringify(a))}
+function _lsClients(u){return JSON.parse(localStorage.getItem('clients_'+u)||'[]')}
+function _lsSetClients(u,a){localStorage.setItem('clients_'+u,JSON.stringify(a))}
+
+/* mapeamento snake_case (Supabase) → camelCase (app) */
+function fromRow(r){return {id:String(r.id),barbeiro:r.barbeiro,cliente:r.cliente,data:r.data,
+  servKey:r.serv_key,servNome:r.serv_nome,valor:Number(r.valor),comBarba:!!r.com_barba,obs:r.obs||''}}
+function toRow(o){return {barbeiro:o.barbeiro,cliente:o.cliente,data:o.data,serv_key:o.servKey,
+  serv_nome:o.servNome,valor:o.valor,com_barba:!!o.comBarba,obs:o.obs||''}}
+
+/* ── CORTES ── */
+async function DB_getCortes(barbeiro){ // barbeiro null => todos (dono)
+  if(cloud()){
+    let q=sb.from('cortes').select('*');
+    if(barbeiro) q=q.eq('barbeiro',barbeiro);
+    const {data,error}=await q;
+    if(error){console.warn('Supabase getCortes',error.message);return _localGetCortes(barbeiro);}
+    return data.map(fromRow);
+  }
+  return _localGetCortes(barbeiro);
+}
+function _localGetCortes(barbeiro){
+  const users=barbeiro?[barbeiro]:BARBER_KEYS;
+  let all=[];
+  users.forEach(u=>{ _lsCortes(u).forEach(c=>{ c.barbeiro=c.barbeiro||u; all.push(c); }); });
+  return all;
+}
+async function DB_addCorte(o){
+  o.barbeiro=CU.username;
+  if(cloud()){
+    const {data,error}=await sb.from('cortes').insert(toRow(o)).select().single();
+    if(error){console.warn('Supabase addCorte',error.message);_localAddCorte(o);return;}
+    return fromRow(data);
+  }
+  _localAddCorte(o);
+}
+function _localAddCorte(o){const a=_lsCortes(o.barbeiro);o.id=o.id||String(Date.now());a.push(o);_lsSetCortes(o.barbeiro,a);}
+async function DB_updateCorte(id,o){
+  if(cloud()){
+    const {error}=await sb.from('cortes').update(toRow(o)).eq('id',id);
+    if(error){console.warn('Supabase updateCorte',error.message);_localUpdateCorte(id,o);}
+    return;
+  }
+  _localUpdateCorte(id,o);
+}
+function _localUpdateCorte(id,o){const u=o.barbeiro||CU.username;const a=_lsCortes(u);const i=a.findIndex(c=>String(c.id)===String(id));if(i>-1){o.id=id;a[i]=o;_lsSetCortes(u,a);}}
+async function DB_removeCorte(id,barbeiro){
+  if(cloud()){
+    const {error}=await sb.from('cortes').delete().eq('id',id);
+    if(error){console.warn('Supabase removeCorte',error.message);_localRemoveCorte(id,barbeiro);}
+    return;
+  }
+  _localRemoveCorte(id,barbeiro);
+}
+function _localRemoveCorte(id,barbeiro){const u=barbeiro||CU.username;_lsSetCortes(u,_lsCortes(u).filter(c=>String(c.id)!==String(id)));}
+
+/* ── CLIENTES ── */
+async function DB_getClients(){
+  if(cloud()){
+    const {data,error}=await sb.from('clientes').select('*').eq('barbeiro',CU.username);
+    if(error){console.warn('Supabase getClients',error.message);return _lsClients(CU.username);}
+    return data.map(c=>({id:String(c.id),nome:c.nome,tel:c.tel||'',preferencia:c.preferencia||''}));
+  }
+  return _lsClients(CU.username);
+}
+async function DB_addClient(obj){
+  const list=await DB_getClients();
+  if(list.find(c=>c.nome.toLowerCase()===obj.nome.toLowerCase())) return;
+  if(cloud()){
+    const {error}=await sb.from('clientes').insert({barbeiro:CU.username,nome:obj.nome,tel:obj.tel||'',preferencia:obj.preferencia||''});
+    if(error){console.warn('Supabase addClient',error.message);_lsSetClients(CU.username,[..._lsClients(CU.username),obj]);}
+    return;
+  }
+  _lsSetClients(CU.username,[..._lsClients(CU.username),obj]);
+}
+async function DB_updateClient(originalNome,obj){
+  if(cloud()){
+    const {error}=await sb.from('clientes').update({nome:obj.nome,tel:obj.tel||'',preferencia:obj.preferencia||''}).eq('barbeiro',CU.username).eq('nome',originalNome);
+    if(error){console.warn('Supabase updateClient',error.message);}
+    return;
+  }
+  const a=_lsClients(CU.username);const i=a.findIndex(c=>c.nome===originalNome);if(i>-1){a[i]=obj;_lsSetClients(CU.username,a);}
+}
+async function DB_removeClient(nome){
+  if(cloud()){
+    const {error}=await sb.from('clientes').delete().eq('barbeiro',CU.username).eq('nome',nome);
+    if(error){console.warn('Supabase removeClient',error.message);}
+    return;
+  }
+  _lsSetClients(CU.username,_lsClients(CU.username).filter(c=>c.nome!==nome));
+}
+
+/* ═══════════════════════════════════════════════════════════════
+   AUTH
+   ═══════════════════════════════════════════════════════════════ */
+function doLogin(){
+  const u=document.getElementById('l-user').value.trim().toLowerCase();
+  const p=document.getElementById('l-pass').value;
+  const b=USERS[u];
+  if(b&&b.senha===p){
+    CU={username:u,nome:b.nome,role:b.role};
+    document.getElementById('l-err').classList.remove('show');
+    document.getElementById('v-login').classList.remove('active');
+    document.getElementById('v-app').classList.add('active');
+    setupNav();
+    document.getElementById('nb-name').textContent=b.nome.split(' ')[0];
+    const dot=document.getElementById('nb-dot');
+    dot.className='dot'+(cloud()?'':' local');
+    dot.title=cloud()?'Sincronizado na nuvem':'Guardado localmente';
+    initSelects();
+    showTab(b.role==='owner'?'owner':'dash');
+  }else{
+    document.getElementById('l-err').classList.add('show');
+  }
+}
+function doLogout(){
+  CU=null;
+  document.getElementById('v-app').classList.remove('active');
+  document.getElementById('v-login').classList.add('active');
+  document.getElementById('l-user').value='';
+  document.getElementById('l-pass').value='';
+  document.getElementById('l-err').classList.remove('show');
+}
+function fillLogin(u,p){document.getElementById('l-user').value=u;document.getElementById('l-pass').value=p;doLogin();}
+
+/* ═══════════════════════════════════════════════════════════════
+   NAVEGAÇÃO  (baseada no papel)
+   ═══════════════════════════════════════════════════════════════ */
+const TABS={
+  dash: {label:'Dashboard', icon:'<rect x="3" y="3" width="7" height="7" rx="1"/><rect x="14" y="3" width="7" height="7" rx="1"/><rect x="3" y="14" width="7" height="7" rx="1"/><rect x="14" y="14" width="7" height="7" rx="1"/>'},
+  reg:  {label:'Novo Corte', icon:'<circle cx="12" cy="12" r="9"/><path d="M12 8v8M8 12h8"/>'},
+  hist: {label:'Histórico',  icon:'<path d="M12 8v4l3 3M3.05 11a9 9 0 1 0 .5-3"/><path d="M3 4v4h4"/>'},
+  cli:  {label:'Clientes',   icon:'<path d="M17 21v-2a4 4 0 00-4-4H5a4 4 0 00-4 4v2M9 11a4 4 0 100-8 4 4 0 000 8zM23 21v-2a4 4 0 00-3-3.87M16 3.13a4 4 0 010 7.75"/>'},
+  owner:{label:'Painel',     icon:'<path d="M3 3v18h18M18 9l-5 5-3-3-4 4"/>'},
+};
+function navFor(role){ return role==='owner' ? ['owner','hist'] : ['dash','reg','hist','cli']; }
+function setupNav(){
+  const wrap=document.getElementById('nb-tabs');
+  wrap.innerHTML=navFor(CU.role).map(t=>
+    `<button class="nb-tab" id="tab-${t}" onclick="showTab('${t}')">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5">${TABS[t].icon}</svg>
+      <span>${TABS[t].label}</span>
+    </button>`).join('');
+}
+const ALL_PANES=['dash','reg','hist','cli','owner'];
+function showTab(t){
+  ALL_PANES.forEach(x=>{
+    const pane=document.getElementById('pane-'+x);
+    if(pane) pane.style.display=x===t?'block':'none';
+    const tab=document.getElementById('tab-'+x);
+    if(tab) tab.classList.toggle('act',x===t);
+  });
+  if(t==='dash')renderDash();
+  if(t==='reg')initReg();
+  if(t==='hist')renderHist();
+  if(t==='cli')renderClientes();
+  if(t==='owner')renderOwner();
+}
+
+/* ─── SELECTS ─── */
+function initSelects(){
+  const now=new Date();
+  ['d','h','o'].forEach(p=>{
+    const ms=document.getElementById(p+'-mes'), as=document.getElementById(p+'-ano');
+    if(!ms)return;
+    ms.innerHTML=MESES.map((m,i)=>`<option value="${i+1}"${i+1===now.getMonth()+1?' selected':''}>${m}</option>`).join('');
+    as.innerHTML=[now.getFullYear()-2,now.getFullYear()-1,now.getFullYear()].map(y=>`<option${y===now.getFullYear()?' selected':''}>${y}</option>`).join('');
+  });
+}
+
+/* ─── UTILS ─── */
+function fmt(n){return Number(n).toLocaleString('pt-AO',{maximumFractionDigits:0})+' KZS'}
+function fmtN(n){return Number(n).toLocaleString('pt-AO',{maximumFractionDigits:0})}
+function today(){return new Date().toISOString().slice(0,10)}
+function fmtDate(d){return d?d.slice(8,10)+'/'+d.slice(5,7)+'/'+d.slice(0,4):''}
+function esc(s){return String(s==null?'':s).replace(/[&<>"']/g,m=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[m]))}
+function jsq(s){return String(s).replace(/\\/g,'\\\\').replace(/'/g,"\\'")}
+function inMonth(cs,mes,ano){return cs.filter(c=>{const d=new Date(c.data);return d.getMonth()+1===+mes&&d.getFullYear()===+ano})}
+function resumo(cs){const b=cs.reduce((s,c)=>s+c.valor,0);return{total:cs.length,bruto:b,comissao:b*COM}}
+function loadingHTML(){return `<div class="loading"><span class="spin"></span>A carregar...</div>`}
+
+/* ═══════════════════════════════════════════════════════════════
+   DASHBOARD (barbeiro)
+   ═══════════════════════════════════════════════════════════════ */
+async function renderDash(){
+  if(!CU)return;
+  const mes=+document.getElementById('d-mes').value, ano=+document.getElementById('d-ano').value;
+  document.getElementById('d-nome').textContent=CU.nome.split(' ')[0];
+  document.getElementById('d-sub').textContent=`${MESES[mes-1]} ${ano} · Comissão calculada a 20%`;
+  document.getElementById('d-hoje').innerHTML=loadingHTML();
+  const all=await DB_getCortes(CU.username);
+  const cs=inMonth(all,mes,ano), r=resumo(cs);
+  document.getElementById('d-tot').textContent=r.total;
+  document.getElementById('d-bruto').innerHTML=fmtN(r.bruto)+'<small> KZS</small>';
+  document.getElementById('d-com').innerHTML=fmtN(r.comissao)+'<small> KZS</small>';
+  const hj=cs.filter(c=>c.data===today());
+  document.getElementById('d-h-cnt').textContent=hj.length;
+  const hd=document.getElementById('d-hoje');
+  if(hj.length){
+    const tot=hj.reduce((s,c)=>s+c.valor,0);
+    hd.innerHTML=`<div class="tw"><table>
+      <thead><tr><th>Cliente</th><th>Serviço</th><th class="tr">Valor</th></tr></thead>
+      <tbody>${hj.map(c=>`<tr><td><strong style="font-weight:600">${esc(c.cliente)||'—'}</strong></td>
+        <td class="dm">${esc(c.servNome)}</td>
+        <td class="tr gold num" style="font-weight:600;font-family:var(--serif)">${fmt(c.valor)}</td></tr>`).join('')}</tbody>
+      <tfoot><tr><td colspan="2"><strong>Total do dia</strong></td><td class="tr"><strong class="gold num" style="font-family:var(--serif)">${fmt(tot)}</strong></td></tr></tfoot>
+    </table></div>`;
+  }else{
+    hd.innerHTML=`<div class="empty"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1"><path d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2"/></svg><p>Nenhum corte registado hoje</p></div>`;
+  }
+  const cnt={};cs.forEach(c=>cnt[c.servNome]=(cnt[c.servNome]||0)+1);
+  const top=Object.entries(cnt).sort((a,b)=>b[1]-a[1]).slice(0,5);
+  const ps=document.getElementById('d-pop-s');
+  if(top.length){ps.style.display='block';document.getElementById('d-pop').innerHTML=top.map(([n,c])=>`<div class="pop-c"><span>${esc(n)}</span><span class="pop-n">${c}×</span></div>`).join('')}
+  else ps.style.display='none';
+}
+
+/* ═══════════════════════════════════════════════════════════════
+   REGISTAR
+   ═══════════════════════════════════════════════════════════════ */
+async function initReg(){
+  if(!CU)return;
+  document.getElementById('r-sub').textContent=editingCorte?'A editar registo':'Barbeiro: '+CU.nome;
+  const rd=document.getElementById('r-data');
+  if(!rd.value)rd.value=today();rd.max=today();
+  const rs=document.getElementById('r-serv');
+  rs.innerHTML='<option value="">— Selecionar serviço —</option>'+SERVICOS.map(s=>`<option value="${s.key}" data-preco="${s.preco}">${s.nome}</option>`).join('');
+  document.getElementById('r-plist').innerHTML=SERVICOS.map(s=>`<div class="pl-item" onclick="selectServ('${s.key}',${s.preco})"><span class="pl-name">${s.nome}</span><span class="pl-price num">${fmtN(s.preco)} KZS</span></div>`).join('');
+  document.getElementById('r-barba-preco').textContent=fmtN(BARBA_PRECO);
+  await renderChips('');
+}
+function applyBarbaAndSet(){
+  const barba=document.getElementById('r-barba').checked;
+  const total=(baseServPrice||0)+(barba?BARBA_PRECO:0);
+  document.getElementById('r-valor').value=total||'';
+  if(total>0)showPrev(total);else document.getElementById('r-prev').style.display='none';
+  document.getElementById('r-helper').textContent=baseServPrice?('Preço base: '+fmt(baseServPrice)+(barba?' + Barba: '+fmt(BARBA_PRECO):'')):'';
+}
+function toggleBarba(){applyBarbaAndSet()}
+async function renderChips(filter){
+  const clients=await DB_getClients();
+  const list=filter?clients.filter(c=>c.nome.toLowerCase().includes(filter.toLowerCase())):clients;
+  const selVal=document.getElementById('r-cliente').value.trim();
+  const html=list.slice(0,12).map(c=>`<span class="cc${c.nome===selVal?' sel':''}" onclick="selectClient(this,'${jsq(c.nome)}')">${esc(c.nome)}</span>`).join('');
+  document.getElementById('r-chips').innerHTML=html+`<span class="cc cc-add" onclick="openModal()">+ Adicionar cliente</span>`;
+}
+function filterClients(){renderChips(document.getElementById('r-cliente').value.trim())}
+async function selectClient(el,nome){
+  document.getElementById('r-cliente').value=nome;
+  document.querySelectorAll('.cc').forEach(c=>c.classList.remove('sel'));
+  el.classList.add('sel');
+  const clients=await DB_getClients();
+  const c=clients.find(cl=>cl.nome===nome);
+  if(c&&c.preferencia&&!document.getElementById('r-serv').value){
+    const serv=SERVICOS.find(s=>s.nome.toLowerCase().includes(c.preferencia.toLowerCase()));
+    if(serv){document.getElementById('r-serv').value=serv.key;baseServPrice=serv.preco;applyBarbaAndSet();document.getElementById('r-helper').textContent='Preferência do cliente: '+fmt(serv.preco);}
+  }
+}
+function onServChange(){
+  const sel=document.getElementById('r-serv'),opt=sel.options[sel.selectedIndex],p=opt.dataset.preco;
+  if(p){baseServPrice=parseFloat(p);applyBarbaAndSet();document.getElementById('r-serv').classList.remove('bad');}
+}
+function onValorChange(){
+  const v=parseFloat(document.getElementById('r-valor').value)||0;
+  const barba=document.getElementById('r-barba').checked;
+  baseServPrice=v-(barba?BARBA_PRECO:0);
+  if(v>0){showPrev(v);document.getElementById('r-valor').classList.remove('bad');}else document.getElementById('r-prev').style.display='none';
+}
+function showPrev(v){document.getElementById('r-prev').style.display='flex';document.getElementById('r-pv').textContent=fmt(v);document.getElementById('r-pc').textContent=fmt(v*COM);}
+function selectServ(key,preco){document.getElementById('r-serv').value=key;document.getElementById('r-serv').classList.remove('bad');baseServPrice=preco;applyBarbaAndSet();window.scrollTo({top:0,behavior:'smooth'});}
+function clearRegForm(){
+  document.getElementById('r-cliente').value='';document.getElementById('r-serv').value='';
+  document.getElementById('r-valor').value='';document.getElementById('r-obs').value='';
+  document.getElementById('r-barba').checked=false;document.getElementById('r-helper').textContent='';
+  document.getElementById('r-prev').style.display='none';document.getElementById('r-data').value=today();
+  baseServPrice=null;
+  ['r-cliente','r-serv','r-valor'].forEach(id=>document.getElementById(id).classList.remove('bad'));
+}
+async function doRegistar(){
+  const cliente=document.getElementById('r-cliente').value.trim();
+  const data=document.getElementById('r-data').value;
+  const key=document.getElementById('r-serv').value;
+  const valor=parseFloat(document.getElementById('r-valor').value);
+  const obs=document.getElementById('r-obs').value.trim();
+  const comBarba=document.getElementById('r-barba').checked;
+  let bad=false;
+  const mark=(id,cond)=>{const el=document.getElementById(id);el.classList.toggle('bad',cond);if(cond)bad=true;};
+  mark('r-cliente',!cliente);mark('r-serv',!key);mark('r-valor',!valor||valor<=0);
+  if(!data){toast('Seleciona uma data.','er');return}
+  if(bad){toast('Preenche os campos obrigatórios.','er');return}
+  const serv=SERVICOS.find(s=>s.key===key);
+  const servNome=serv.nome+(comBarba?' + Barba e Bigode':'');
+  const btn=document.getElementById('r-submit');btn.disabled=true;btn.style.opacity=.6;
+  try{
+    if(editingCorte){
+      await DB_updateCorte(editingCorte.id,{barbeiro:editingCorte.barbeiro||CU.username,cliente,data,servKey:key,servNome,valor,comBarba,obs});
+      toast('Corte atualizado!','ok');
+    }else{
+      await DB_addCorte({cliente,data,servKey:key,servNome,valor,comBarba,obs});
+      await DB_addClient({nome:cliente,tel:'',preferencia:''});
+      toast('Corte registado com sucesso!','ok');
+    }
+    editingCorte=null;
+    document.getElementById('r-cancel').textContent='Cancelar';
+    document.getElementById('r-submit').lastChild.textContent='Registar Corte';
+    clearRegForm();
+    showTab(CU.role==='owner'?'owner':'dash');
+  }catch(e){toast('Erro ao guardar. Tenta de novo.','er');}
+  finally{btn.disabled=false;btn.style.opacity=1;}
+}
+function cancelEdit(){
+  editingCorte=null;clearRegForm();
+  document.getElementById('r-cancel').textContent='Cancelar';
+  document.getElementById('r-submit').lastChild.textContent='Registar Corte';
+  showTab('hist');
+}
+
+/* ═══════════════════════════════════════════════════════════════
+   HISTÓRICO
+   ═══════════════════════════════════════════════════════════════ */
+let _histCache=[];
+async function renderHist(){
+  if(!CU)return;
+  const mes=+document.getElementById('h-mes').value, ano=+document.getElementById('h-ano').value;
+  const search=(document.getElementById('h-search').value||'').trim().toLowerCase();
+  document.getElementById('h-sub').textContent=`${CU.nome} · ${MESES[mes-1]} ${ano}`;
+  document.getElementById('h-body').innerHTML=loadingHTML();
+  const all=await DB_getCortes(CU.username);
+  let cs=inMonth(all,mes,ano);
+  if(search) cs=cs.filter(c=>(c.cliente||'').toLowerCase().includes(search)||(c.servNome||'').toLowerCase().includes(search));
+  _histCache=cs;
+  const r=resumo(cs);
+  document.getElementById('h-tot').textContent=r.total;
+  document.getElementById('h-br').innerHTML=fmtN(r.bruto)+'<small> KZS</small>';
+  document.getElementById('h-co').innerHTML=fmtN(r.comissao)+'<small> KZS</small>';
+  document.getElementById('h-cnt').textContent=cs.length;
+  const hb=document.getElementById('h-body');
+  if(!cs.length){
+    hb.innerHTML=`<div class="empty"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1"><path d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2"/></svg><p>${search?'Nenhum resultado para a pesquisa':'Sem registos em '+MESES[mes-1]+' '+ano}</p></div>`;
+    return;
+  }
+  const sorted=[...cs].sort((a,b)=>b.data.localeCompare(a.data));
+  hb.innerHTML=`<div class="tw"><table>
+    <thead><tr><th>Data</th><th>Cliente / Serviço</th><th class="tr">Valor</th><th class="tc">Ações</th></tr></thead>
+    <tbody>${sorted.map(c=>`<tr>
+      <td class="dc" style="white-space:nowrap">${fmtDate(c.data)}</td>
+      <td><div style="font-weight:600;font-size:.85rem">${esc(c.cliente)||'—'}</div><div class="dm">${esc(c.servNome)}</div>${c.obs?`<div class="dm" style="font-style:italic;margin-top:1px">${esc(c.obs)}</div>`:''}</td>
+      <td class="tr"><div class="gold num" style="font-weight:600;font-family:var(--serif);font-size:.88rem">${fmt(c.valor)}</div><div class="green num" style="font-size:.73rem;margin-top:1px">+${fmt(c.valor*COM)}</div></td>
+      <td class="tc"><div style="display:flex;gap:4px;justify-content:center">
+        <button class="del edit" title="Editar" onclick="startEditCorte('${c.id}')"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M11 4H4a2 2 0 00-2 2v14a2 2 0 002 2h14a2 2 0 002-2v-7"/><path d="M18.5 2.5a2.12 2.12 0 013 3L12 15l-4 1 1-4 9.5-9.5z"/></svg></button>
+        <button class="del" title="Eliminar" onclick="delItem('${c.id}')"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M3 6h18M19 6v14a2 2 0 01-2 2H7a2 2 0 01-2-2V6m3 0V4a1 1 0 011-1h4a1 1 0 011 1v2"/></svg></button>
+      </div></td>
+    </tr>`).join('')}</tbody>
+    <tfoot><tr><td colspan="2"><strong>TOTAL DO MÊS</strong></td><td class="tr"><div class="gold num" style="font-weight:700;font-family:var(--serif)">${fmt(r.bruto)}</div><div class="green num" style="font-size:.73rem">+${fmt(r.comissao)}</div></td><td></td></tr></tfoot>
+  </table></div>`;
+}
+function startEditCorte(id){
+  const c=_histCache.find(x=>String(x.id)===String(id));
+  if(!c)return;
+  editingCorte=c;
+  showTab('reg');
+  setTimeout(()=>{
+    document.getElementById('r-cliente').value=c.cliente||'';
+    document.getElementById('r-data').value=c.data;
+    const hasBarba=/\+ Barba e Bigode$/.test(c.servNome);
+    document.getElementById('r-barba').checked=hasBarba;
+    document.getElementById('r-serv').value=c.servKey;
+    baseServPrice=c.valor-(hasBarba?BARBA_PRECO:0);
+    document.getElementById('r-valor').value=c.valor;
+    document.getElementById('r-obs').value=c.obs||'';
+    showPrev(c.valor);
+    document.getElementById('r-helper').textContent='A editar registo existente';
+    document.getElementById('r-cancel').textContent='Cancelar edição';
+    document.getElementById('r-submit').lastChild.textContent='Guardar Alterações';
+    document.getElementById('r-sub').textContent='A editar registo';
+  },50);
+}
+async function delItem(id){
+  if(!confirm('Eliminar este registo?'))return;
+  const c=_histCache.find(x=>String(x.id)===String(id));
+  await DB_removeCorte(id,c?c.barbeiro:CU.username);
+  toast('Registo eliminado.','ok');renderHist();
+}
+
+/* ═══════════════════════════════════════════════════════════════
+   CLIENTES
+   ═══════════════════════════════════════════════════════════════ */
+async function renderClientes(){
+  if(!CU)return;
+  document.getElementById('c-body').innerHTML=loadingHTML();
+  let clients=[...(await DB_getClients())].sort((a,b)=>a.nome.localeCompare(b.nome));
+  const search=(document.getElementById('c-search').value||'').trim().toLowerCase();
+  if(search) clients=clients.filter(c=>c.nome.toLowerCase().includes(search)||(c.tel||'').toLowerCase().includes(search)||(c.preferencia||'').toLowerCase().includes(search));
+  document.getElementById('c-sub').textContent=CU.nome+' · '+clients.length+' cliente(s)';
+  document.getElementById('c-cnt').textContent=clients.length;
+  const cb=document.getElementById('c-body');
+  if(!clients.length){
+    cb.innerHTML=`<div class="empty"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1"><path d="M17 21v-2a4 4 0 00-4-4H5a4 4 0 00-4 4v2M9 11a4 4 0 100-8 4 4 0 000 8z"/></svg><p>${search?'Nenhum cliente encontrado':'Ainda não tens clientes registados.'}</p>${search?'':'<button class="btn-o" onclick="openModal()">Adicionar primeiro cliente</button>'}</div>`;
+    return;
+  }
+  cb.innerHTML=`<div class="tw"><table>
+    <thead><tr><th>Nome</th><th>Telefone</th><th>Preferência</th><th class="tc">Ações</th></tr></thead>
+    <tbody>${clients.map(c=>`<tr>
+      <td><strong style="font-weight:600">${esc(c.nome)}</strong></td>
+      <td class="dm">${esc(c.tel)||'—'}</td>
+      <td class="dm">${esc(c.preferencia)||'—'}</td>
+      <td class="tc"><div style="display:flex;gap:6px;justify-content:center">
+        <button class="del edit" title="Editar" onclick="editClient('${jsq(c.nome)}')"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M11 4H4a2 2 0 00-2 2v14a2 2 0 002 2h14a2 2 0 002-2v-7"/><path d="M18.5 2.5a2.12 2.12 0 013 3L12 15l-4 1 1-4 9.5-9.5z"/></svg></button>
+        <button class="del" title="Eliminar" onclick="deleteClient('${jsq(c.nome)}')"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M3 6h18M19 6v14a2 2 0 01-2 2H7a2 2 0 01-2-2V6m3 0V4a1 1 0 011-1h4a1 1 0 011 1v2"/></svg></button>
+      </div></td>
+    </tr>`).join('')}</tbody>
+  </table></div>`;
+}
+function openModal(){
+  editingClient=null;
+  document.getElementById('modal-title').textContent='Adicionar Cliente Habitual';
+  document.getElementById('modal-nome').value='';document.getElementById('modal-tel').value='';document.getElementById('modal-pref').value='';
+  document.getElementById('overlay').classList.add('open');
+  setTimeout(()=>document.getElementById('modal-nome').focus(),120);
+}
+async function editClient(nome){
+  const c=(await DB_getClients()).find(cl=>cl.nome===nome);
+  if(!c)return;
+  editingClient=nome;
+  document.getElementById('modal-title').textContent='Editar Cliente';
+  document.getElementById('modal-nome').value=c.nome;document.getElementById('modal-tel').value=c.tel||'';document.getElementById('modal-pref').value=c.preferencia||'';
+  document.getElementById('overlay').classList.add('open');
+  setTimeout(()=>document.getElementById('modal-nome').focus(),120);
+}
+async function deleteClient(nome){
+  if(!confirm('Eliminar o cliente "'+nome+'"? O histórico de cortes não será apagado.'))return;
+  await DB_removeClient(nome);toast('Cliente eliminado.','ok');renderClientes();
+}
+function closeModal(e){if(!e||e.target===document.getElementById('overlay'))document.getElementById('overlay').classList.remove('open');}
+async function saveClient(){
+  const nome=document.getElementById('modal-nome').value.trim();
+  if(!nome){toast('Insere o nome do cliente.','er');return}
+  const tel=document.getElementById('modal-tel').value.trim();
+  const pref=document.getElementById('modal-pref').value.trim();
+  const wasEditing=!!editingClient;
+  if(wasEditing) await DB_updateClient(editingClient,{nome,tel,preferencia:pref});
+  else await DB_addClient({nome,tel,preferencia:pref});
+  editingClient=null;closeModal();
+  if(document.getElementById('pane-reg').style.display!=='none'){document.getElementById('r-cliente').value=nome;renderChips('');}
+  if(document.getElementById('pane-cli').style.display!=='none')renderClientes();
+  toast(wasEditing?'Cliente atualizado!':'Cliente guardado!','ok');
+}
+
+/* ═══════════════════════════════════════════════════════════════
+   PAINEL DO DONO
+   ═══════════════════════════════════════════════════════════════ */
+let _ownerCache=null;
+async function renderOwner(){
+  if(!CU)return;
+  const mes=+document.getElementById('o-mes').value, ano=+document.getElementById('o-ano').value;
+  document.getElementById('o-sub').textContent=`${MESES[mes-1]} ${ano} · Todos os barbeiros`;
+  document.getElementById('o-chart').innerHTML=loadingHTML();
+  document.getElementById('o-table').innerHTML='';
+  const all=await DB_getCortes(null);
+  const cs=inMonth(all,mes,ano);
+  const perBarber=BARBER_KEYS.map(k=>{
+    const bc=cs.filter(c=>c.barbeiro===k);
+    const r=resumo(bc);
+    return {key:k,nome:USERS[k].nome,total:r.total,bruto:r.bruto,comissao:r.comissao,casa:r.bruto*(1-COM)};
+  }).sort((a,b)=>b.bruto-a.bruto);
+  _ownerCache={mes,ano,perBarber,geral:resumo(cs)};
+  const g=_ownerCache.geral;
+  document.getElementById('o-tot').textContent=g.total;
+  document.getElementById('o-bruto').innerHTML=fmtN(g.bruto)+'<small> KZS</small>';
+  document.getElementById('o-com').innerHTML=fmtN(g.comissao)+'<small> KZS</small>';
+  document.getElementById('o-casa').innerHTML=fmtN(g.bruto*(1-COM))+'<small> KZS</small>';
+  const max=Math.max(1,...perBarber.map(b=>b.bruto));
+  document.getElementById('o-chart').innerHTML=perBarber.map(b=>`
+    <div class="bar-row"><div class="bar-name">${esc(b.nome.split(' ')[0])}</div>
+      <div class="bar-track"><div class="bar-fill" style="width:${(b.bruto/max*100).toFixed(1)}%"></div></div>
+      <div class="bar-val">${fmtN(b.bruto)}</div></div>`).join('')||'<p class="dm">Sem dados.</p>';
+  document.getElementById('o-table').innerHTML=`<div class="tw"><table>
+    <thead><tr><th>Barbeiro</th><th class="tr">Cortes</th><th class="tr">Faturação</th><th class="tr">Comissão</th><th class="tr">Casa (80%)</th></tr></thead>
+    <tbody>${perBarber.map((b,i)=>`<tr>
+      <td><strong style="font-weight:600">${i===0&&b.bruto>0?'👑 ':''}${esc(b.nome)}</strong></td>
+      <td class="tr num">${b.total}</td>
+      <td class="tr gold num" style="font-weight:600">${fmt(b.bruto)}</td>
+      <td class="tr green num">${fmt(b.comissao)}</td>
+      <td class="tr blue num">${fmt(b.casa)}</td>
+    </tr>`).join('')}</tbody>
+    <tfoot><tr><td><strong>TOTAL</strong></td><td class="tr num"><strong>${g.total}</strong></td>
+      <td class="tr num"><strong class="gold">${fmt(g.bruto)}</strong></td>
+      <td class="tr num"><strong class="green">${fmt(g.comissao)}</strong></td>
+      <td class="tr num"><strong class="blue">${fmt(g.bruto*(1-COM))}</strong></td></tr></tfoot>
+  </table></div>`;
+}
+
+/* ═══════════════════════════════════════════════════════════════
+   RELATÓRIOS  (PDF / impressão  +  WhatsApp)
+   ═══════════════════════════════════════════════════════════════ */
+function printReport(kind){
+  const area=document.getElementById('print-area');
+  if(kind==='hist'){
+    const mes=+document.getElementById('h-mes').value, ano=+document.getElementById('h-ano').value;
+    const cs=[..._histCache].sort((a,b)=>a.data.localeCompare(b.data)), r=resumo(cs);
+    area.innerHTML=`<div class="p-head"><div class="p-brand">BARBEARIA DO PEDRINHO</div><div class="p-sub">Relatório Mensal — ${CU.nome}</div></div>
+      <div class="p-meta"><span><strong>Período:</strong> ${MESES[mes-1]} ${ano}</span><span><strong>Emitido:</strong> ${fmtDate(today())}</span></div>
+      <table class="p-table"><thead><tr><th>Data</th><th>Cliente</th><th>Serviço</th><th class="p-tr">Valor</th><th class="p-tr">Comissão</th></tr></thead>
+      <tbody>${cs.map(c=>`<tr><td>${fmtDate(c.data)}</td><td>${esc(c.cliente)||'—'}</td><td>${esc(c.servNome)}</td><td class="p-tr">${fmt(c.valor)}</td><td class="p-tr">${fmt(c.valor*COM)}</td></tr>`).join('')||'<tr><td colspan="5">Sem registos.</td></tr>'}</tbody>
+      <tfoot><tr><td colspan="3">TOTAL — ${r.total} corte(s)</td><td class="p-tr">${fmt(r.bruto)}</td><td class="p-tr">${fmt(r.comissao)}</td></tr></tfoot></table>
+      <div class="p-foot">Um Cavalheiro, Uma Experiência Única</div>`;
+  }else if(kind==='owner'){
+    if(!_ownerCache){toast('A preparar dados...','info');return;}
+    const {mes,ano,perBarber,geral}=_ownerCache;
+    area.innerHTML=`<div class="p-head"><div class="p-brand">BARBEARIA DO PEDRINHO</div><div class="p-sub">Relatório de Gestão — Visão Geral</div></div>
+      <div class="p-meta"><span><strong>Período:</strong> ${MESES[mes-1]} ${ano}</span><span><strong>Emitido:</strong> ${fmtDate(today())}</span></div>
+      <table class="p-table"><thead><tr><th>Barbeiro</th><th class="p-tr">Cortes</th><th class="p-tr">Faturação</th><th class="p-tr">Comissão</th><th class="p-tr">Casa (80%)</th></tr></thead>
+      <tbody>${perBarber.map(b=>`<tr><td>${esc(b.nome)}</td><td class="p-tr">${b.total}</td><td class="p-tr">${fmt(b.bruto)}</td><td class="p-tr">${fmt(b.comissao)}</td><td class="p-tr">${fmt(b.casa)}</td></tr>`).join('')}</tbody>
+      <tfoot><tr><td>TOTAL</td><td class="p-tr">${geral.total}</td><td class="p-tr">${fmt(geral.bruto)}</td><td class="p-tr">${fmt(geral.comissao)}</td><td class="p-tr">${fmt(geral.bruto*(1-COM))}</td></tr></tfoot></table>
+      <div class="p-foot">Um Cavalheiro, Uma Experiência Única</div>`;
+  }
+  window.print();
+}
+function shareWhatsApp(kind){
+  let text='';
+  if(kind==='hist'){
+    const mes=+document.getElementById('h-mes').value, ano=+document.getElementById('h-ano').value;
+    const r=resumo(_histCache);
+    text=`*Barbearia do Pedrinho*\n${CU.nome} — ${MESES[mes-1]} ${ano}\n\n`+
+         `✂️ Cortes: ${r.total}\n💰 Faturação: ${fmt(r.bruto)}\n🟢 Comissão (20%): ${fmt(r.comissao)}`;
+  }else if(kind==='owner'){
+    if(!_ownerCache){toast('A preparar dados...','info');return;}
+    const {mes,ano,perBarber,geral}=_ownerCache;
+    text=`*Barbearia do Pedrinho — Gestão*\n${MESES[mes-1]} ${ano}\n\n`+
+         perBarber.map(b=>`• ${b.nome}: ${b.total} cortes — ${fmt(b.bruto)}`).join('\n')+
+         `\n\n📊 *TOTAL:* ${geral.total} cortes\n💰 Faturação: ${fmt(geral.bruto)}\n🟢 Comissões: ${fmt(geral.comissao)}\n🏠 Casa (80%): ${fmt(geral.bruto*(1-COM))}`;
+  }
+  window.open('https://wa.me/?text='+encodeURIComponent(text),'_blank');
+}
+
+/* ─── TOAST ─── */
+let _tt;
+function toast(msg,type='ok'){
+  const el=document.getElementById('toast');el.className='toast '+type;
+  document.getElementById('toast-msg').textContent=msg;el.classList.add('show');
+  clearTimeout(_tt);_tt=setTimeout(()=>el.classList.remove('show'),3000);
+}
+
+/* ═══════════════════════════════════════════════════════════════
+   DEMONSTRAÇÃO AUTOMÁTICA  (para gravação de ecrã)
+   Corre o sistema sozinho, com legendas. No fim restaura os dados reais.
+   ═══════════════════════════════════════════════════════════════ */
+let demoRunning=false, demoBackup=null, demoAbort=false;
+const sleep=ms=>new Promise(r=>setTimeout(r,ms));
+function demoStorageBackup(){
+  demoBackup={};
+  for(let i=0;i<localStorage.length;i++){const k=localStorage.key(i);if(/^(cortes|clients)_/.test(k))demoBackup[k]=localStorage.getItem(k);}
+}
+function demoStorageRestore(){
+  Object.keys(localStorage).filter(k=>/^(cortes|clients)_/.test(k)).forEach(k=>localStorage.removeItem(k));
+  if(demoBackup)Object.entries(demoBackup).forEach(([k,v])=>localStorage.setItem(k,v));
+  demoBackup=null;
+}
+function demoSeed(){
+  Object.keys(localStorage).filter(k=>/^(cortes|clients)_/.test(k)).forEach(k=>localStorage.removeItem(k));
+  const now=new Date(), y=now.getFullYear(), m=now.getMonth();
+  const d=day=>new Date(y,m,day).toISOString().slice(0,10);
+  const S=k=>SERVICOS.find(s=>s.key===k);
+  const mk=(cli,key,day,barba,obs)=>{const s=S(key);return{id:String(Math.random()).slice(2),cliente:cli,data:d(day),servKey:key,servNome:s.nome+(barba?' + Barba e Bigode':''),valor:s.preco+(barba?BARBA_PRECO:0),comBarba:!!barba,obs:obs||''};};
+  const data={
+    arthur:[mk('João Silva','corte_pedrinho',3),mk('Miguel Costa','corte_frances_2t',5,true),mk('Pedro Alves','corte_escov_ad',8),mk('Rui Santos','corte_frances_2t',12,true),mk('Carlos Mendes','corte_depilador',15),mk('André Lopes','corte_escov_ad',18,true),mk('Tiago Nunes','corte_pedrinho',22)],
+    klein:[mk('Nuno Dias','corte_frances_2t',4),mk('Bruno Reis','corte_escov_ad',9,true),mk('Hélder Sá','grafite',14),mk('Vítor Pinto','corte_frances_2t',20,true)],
+    vemba:[mk('Filipe Rocha','corte_pedrinho',6),mk('Diogo Freitas','corte_escov_jr',11),mk('Ricardo Melo','corte_frances_2t',16,true),mk('Sérgio Faria','corte_depilador',19),mk('Paulo Cruz','corte_escov_ad',23,true)],
+    bernardo:[mk('Marco Teles','corte_frances_2t',7,true),mk('Luís Gomes','pintura_curto',13),mk('Fábio Matos','corte_escov_ad',21)],
+    baldie:[mk('Gonçalo Vaz','corte_pedrinho',10,true),mk('Hugo Barros','corte_frances_jr',17),mk('Duarte Sousa','grafite',24),mk('Mário Pena','corte_depilador',26,true)],
+  };
+  Object.entries(data).forEach(([u,arr])=>{
+    localStorage.setItem('cortes_'+u,JSON.stringify(arr));
+    const cli=[...new Set(arr.map(c=>c.cliente))].map(n=>({nome:n,tel:'',preferencia:''}));
+    localStorage.setItem('clients_'+u,JSON.stringify(cli));
+  });
+}
+const DEMO_SPEED=1.7; // >1 = mais lento (mais tempo para ler)
+function cap(eyebrow,text,secs){
+  secs=secs*DEMO_SPEED;
+  return new Promise(async res=>{
+    const el=document.getElementById('demo-cap');
+    document.getElementById('demo-cap-eyebrow').textContent=eyebrow;
+    document.getElementById('demo-cap-text').innerHTML=text;
+    const fill=document.getElementById('demo-cap-fill');
+    fill.style.transition='none';fill.style.width='0';
+    el.classList.add('show');
+    await sleep(50);
+    fill.style.transition=`width ${secs}s linear`;fill.style.width='100%';
+    await sleep(secs*1000);
+    res();
+  });
+}
+async function typeInto(id,text,perChar=55){
+  const el=document.getElementById(id);el.value='';el.focus();
+  for(const ch of text){if(demoAbort)return;el.value+=ch;el.dispatchEvent(new Event('input'));await sleep(perChar);}
+}
+function focusEl(id){const el=document.getElementById(id);if(el)el.classList.add('demo-focus');}
+function unfocusAll(){document.querySelectorAll('.demo-focus').forEach(e=>e.classList.remove('demo-focus'));}
+async function step(fn){if(demoAbort)throw'abort';await fn();}
+
+async function startDemo(){
+  if(demoRunning)return;
+  demoRunning=true;demoAbort=false;
+  demoStorageBackup();demoSeed();
+  document.getElementById('demo-badge').classList.add('show');
+  const intro=document.getElementById('demo-intro');
+  try{
+    // Intro
+    intro.classList.add('show');
+    await sleep(2600);if(demoAbort)throw'abort';
+    intro.classList.remove('show');
+    await sleep(500);
+
+    await cap('Bem-vindo','Sistema de gestão da <strong>Barbearia do Pedrinho</strong>. Cada barbeiro tem o seu acesso e vê apenas os seus ganhos.',4.5);
+
+    // Login barbeiro
+    await step(async()=>{fillLogin('arthur','arthur123');});
+    await sleep(600);
+    await cap('Dashboard do Barbeiro','O <strong>Arthur</strong> entrou. Vê aqui os cortes do mês, o total faturado e a sua <strong>comissão de 20%</strong> — calculada sozinha.',5);
+
+    // Novo corte
+    document.getElementById('demo-cap').classList.remove('show');
+    await step(async()=>{showTab('reg');});
+    await sleep(700);
+    await cap('Registar um Corte','Vamos registar um novo atendimento. Basta escrever o cliente e escolher o serviço.',4);
+    await typeInto('r-cliente','Ricardo Manuel');
+    await sleep(400);
+    focusEl('r-serv');
+    await step(async()=>{document.getElementById('r-serv').value='corte_frances_2t';onServChange();});
+    await sleep(900);unfocusAll();
+    await cap('Corte + Barba','Repara: com um toque em <strong>"Incluir Barba e Bigode"</strong>, o sistema soma automaticamente os <strong>+3.000 KZS</strong> ao valor e à comissão.',5);
+    focusEl('r-barba-toggle');
+    await step(async()=>{document.getElementById('r-barba').checked=true;toggleBarba();});
+    await sleep(1400);unfocusAll();
+    focusEl('r-prev');
+    await cap('Comissão Automática','Corte 6.000 + Barba 3.000 = <strong>9.000 KZS</strong>. A comissão do barbeiro (20%) aparece na hora: <strong>1.800 KZS</strong>.',5);
+    unfocusAll();
+    await step(async()=>{await doRegistar();});
+    await sleep(900);
+    await cap('Registado!','O corte foi guardado e o dashboard atualiza-se automaticamente.',3.5);
+
+    // Histórico + pesquisa
+    document.getElementById('demo-cap').classList.remove('show');
+    await step(async()=>{showTab('hist');});
+    await sleep(800);
+    await cap('Histórico Completo','Todos os cortes do mês, com valor e comissão. Dá para <strong>editar</strong>, <strong>eliminar</strong>, <strong>pesquisar</strong> e exportar.',5);
+    await typeInto('h-search','Ricardo',70);
+    await sleep(1500);
+    await step(async()=>{document.getElementById('h-search').value='';renderHist();});
+    await sleep(600);
+    await cap('Partilha Fácil','Com um clique, o barbeiro envia o resumo do mês por <strong>WhatsApp</strong> ou gera um <strong>PDF</strong> para imprimir.',4.5);
+
+    // Clientes
+    document.getElementById('demo-cap').classList.remove('show');
+    await step(async()=>{showTab('cli');});
+    await sleep(800);
+    await cap('Base de Dados de Clientes','Cada barbeiro guarda os seus clientes habituais — nome, telefone e a preferência de corte.',4.5);
+
+    // Logout -> Dono
+    document.getElementById('demo-cap').classList.remove('show');
+    await step(async()=>{doLogout();});
+    await sleep(700);
+    await cap('Acesso do Dono','Agora o mais importante para si, <strong>Sr. Dono</strong>: o seu painel de gestão.',4);
+    await step(async()=>{fillLogin('pedrinho','pedrinho123');});
+    await sleep(900);
+    await cap('Visão Geral','Numa só tela vê a <strong>faturação total</strong> da barbearia, as comissões pagas e o que fica para a casa (80%).',5.5);
+    focusEl('o-chart');
+    await cap('Ranking de Barbeiros','O gráfico mostra quem mais faturou no mês. O 👑 marca o líder. Tudo somado automaticamente.',5);
+    unfocusAll();
+    await cap('Relatório do Mês','O dono também exporta o relatório geral em <strong>PDF</strong> ou partilha por <strong>WhatsApp</strong>.',4.5);
+
+    // Outro
+    document.getElementById('demo-cap').classList.remove('show');
+    await sleep(300);
+    intro.classList.add('show');
+    intro.querySelector('div:last-child').textContent='Um Cavalheiro, Uma Experiência Única';
+    await cap('Obrigado','Simples no telemóvel, funciona sem internet e guarda tudo em segurança. <strong>Barbearia do Pedrinho</strong>.',5);
+    await sleep(1500);
+  }catch(e){/* abortado */}
+  finally{ finishDemo(); }
+}
+function finishDemo(){
+  demoAbort=true;
+  document.getElementById('demo-cap').classList.remove('show');
+  document.getElementById('demo-intro').classList.remove('show');
+  document.getElementById('demo-badge').classList.remove('show');
+  unfocusAll();
+  demoStorageRestore();
+  demoRunning=false;
+  // volta ao ecrã de login limpo
+  if(CU)doLogout();
+  const intro=document.getElementById('demo-intro');
+  if(intro){const last=intro.querySelector('div:last-child');if(last)last.textContent='Sistema de Gestão · Demonstração';}
+}
+function stopDemo(){ finishDemo(); toast('Demonstração terminada. Dados reais restaurados.','info'); }
+window.demoState=()=>demoRunning;
+
+/* ─── INIT ─── */
+initDB();
+document.getElementById('l-pass').addEventListener('keydown',e=>{if(e.key==='Enter')doLogin()});
+document.getElementById('modal-pref').addEventListener('keydown',e=>{if(e.key==='Enter')saveClient()});
+</script>
+</body>
+</html>
